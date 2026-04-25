@@ -1,10 +1,14 @@
-import typeorm from "typeorm";
+import "reflect-metadata"
+import { DataSource } from "typeorm";
+import * as dotenv from "dotenv";
+dotenv.config();
 
-export const AppDataSource = new typeorm.DataSource({
+const dbName = process.env.DB_NAME;
+export const AppDataSource = new DataSource({
     type: "better-sqlite3",
-    database: "database.db",
+    database: dbName || "database.db",
     synchronize: false,
     logging: true,
-    entities: ["src/entity/*.ts"],
+    entities: ["src/entities/*.ts"],
     migrations: ["src/migrations/*.ts"]
 });
