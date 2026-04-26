@@ -11,11 +11,11 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
-app.use("/api/auth", AuthRoutes)
+app.use("/api/auth", AuthRoutes);
 
 AppDataSource.initialize()
     .then(() => {
         app.listen(port, () => {
-            console.log(`Server is running on http://localhost:${port}`)
+            console.log(`Server is running on http://localhost:${port}`);
         })
     });
