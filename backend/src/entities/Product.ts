@@ -1,5 +1,4 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { Category } from "./Category";
 import { SubCategory } from "./SubCateory";
 
 @Entity()
@@ -20,7 +19,7 @@ export class Product{
     stockQuantity: number;
 
     @Column({type: "text", nullable: true})
-    imagePath: number;
+    imagePath: string;
 
     @ManyToOne(() => SubCategory, (subCateroy) => subCateroy.products)
     subCategory: SubCategory;
