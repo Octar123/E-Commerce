@@ -4,6 +4,7 @@ import { User, UserRole } from "../entities/User";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { sessionStore } from "../utils/sessionStore";
+import { otpStore } from "../utils/otpStore";
 
 export class AuthController {
   private userRepo = AppDataSource.getRepository(User);
@@ -86,6 +87,64 @@ export class AuthController {
 
     res.status(200).json({success: true, message: "Login Successfull", name: user.name, role: user.role});
   };
+
+  logout = async (req: Request, res: Response) => {
+    const sessionId = req.cookies.auth_token;
+
+    if(sessionId){
+        sessionStore.delete(sessionId);
+    }
+
+    res.clearCookie('auth_token', {path: '/'});
+
+    res.status(200).json({success: true, message: "Logout Successfull"});
+  };
+
+  forgotPassword = async (req:Request, res:Response) => {
+    const {email} = req.body;
+
+    const user = await this.userRepo.findOneBy({email});
+
+    if(!user){
+        return res.status(404).json({success:false, error:"No User with this email found."});
+    }
+
+    const mockCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiresIn = (Date.now() + 5 * 60000);
+
+    otpStore.set(email, {otp: mockCode, expires: expiresIn});
+
+    res.status(200).json({success: true, message: "OTP sent successfully", code: mockCode});
+  }
+
+  resetPassword = async (req: Request, res: Response) => {
+    const {code,email, password} = req.body;
+    const {id} = (req as any).user;
+
+    if(!code || !password){
+        return res.status(400).json({success: false, error: "Please enter code or password"});
+    }
+
+    const storeCode = otpStore.get(email);
+    if(storeCode.expires < Date.now()){
+        otpStore.delete(email);
+        return res.status(401).json({success: false, error: "OTP expired! Please try again"})
+    }
+
+    if(code !== storeCode.otp){
+        return res.status(400).json({success: false, error: "OTP did not match"});
+    }
+
+    const user = await this.userRepo.findOne({
+        where:({id})
+    });
+
+    const hashPassword = await bcrypt.hash(password, 10);
+    user.password = hashPassword;
+    await this.userRepo.save(user);
+
+    return res.status(200).json({success: true, message: "Password Changed Successfully"});
+  }
 }
 
 export const authController = new AuthController();
