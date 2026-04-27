@@ -4,6 +4,7 @@ import { AppDataSource } from "./data-source";
 import * as dotenv from 'dotenv'
 import AuthRoutes from "./routes/AuthRoutes";
 import productRoutes from "./routes/ProductRoutes";
+import cartRoutes from "./routes/CartRoutes";
 dotenv.config();
 
 const port = process.env.PORT;
@@ -14,6 +15,7 @@ app.use(cookieParser());
 
 app.use("/api/auth", AuthRoutes);
 app.use("/api/product", productRoutes);
+app.use("/api/cart", cartRoutes);
 
 AppDataSource.initialize()
     .then(() => {

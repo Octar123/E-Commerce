@@ -2,10 +2,14 @@ import { Request, Response } from "express";
 import { AppDataSource } from "../data-source";
 import { Product } from "../entities/Product";
 import { Type } from "../entities/Type";
+import { CartItem } from "../entities/CartItem";
+import { User } from "../entities/User";
+import { Cart } from "../entities/Cart";
 
 class ProductController {
   private productRepo = AppDataSource.getRepository(Product);
   private typeRepo = AppDataSource.getRepository(Type);
+
 
   getAllProducts = async (req: Request, res: Response) => {
     const allProducts = await this.productRepo.find({
@@ -98,7 +102,9 @@ class ProductController {
         return res.status(404).json({success: false, error: "No Products Found"});
     }
     return res.json(product)
-  }
+  };
+
+  
 }
 
 export const productController = new ProductController();

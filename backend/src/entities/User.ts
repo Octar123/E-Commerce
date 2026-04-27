@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Cart } from "./Cart";
 
 export enum UserRole {
     USER = "user",
@@ -24,4 +25,7 @@ export class User {
 
     @Column({type: "boolean", default: false})
     isLocked: boolean;
+
+    @OneToOne(() => Cart, (cart) => cart.user)
+    cart: Cart;
 }
