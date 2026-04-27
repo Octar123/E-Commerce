@@ -6,43 +6,42 @@ import { SubCategory } from "../entities/SubCateory";
 import { Product } from "../entities/Product";
 
 export class InitialSeed1777210313829 implements MigrationInterface {
+  public async up(queryRunner: QueryRunner): Promise<void> {
+    const manager = queryRunner.manager;
 
-    public async up(queryRunner: QueryRunner): Promise<void> {
+    const electronicsType = await manager.save(
+      manager.create(Type, { name: "Electronics" }),
+    );
 
-        const typeRepo = AppDataSource.getRepository(Type);
-        const categoryRepo = AppDataSource.getRepository(Category);
-        const subCategoryRepo = AppDataSource.getRepository(SubCategory);
-        const productRepo = AppDataSource.getRepository(Product);
+    const computingCategory = await manager.save(
+      manager.create(Category, { name: "Computing", type: electronicsType }),
+    );
 
-        const electroinsType = typeRepo.create({name: 'Electronics'});
-        await typeRepo.save(electroinsType);
+    const laptopSubCategory = await manager.save(
+      manager.create(SubCategory, {
+        name: "Laptops",
+        category: computingCategory,
+      }),
+    );
 
-        const computingCategory = categoryRepo.create({name: 'Computings', type: electroinsType});
-        await categoryRepo.save(computingCategory);
+    // Bulk save products for better performance
+    await manager.save(Product, [
+      {
+        name: "MacBook Pro",
+        description: "M3 Chip, 16GB RAM",
+        price: 1999.9,
+        stockQuantity: 15,
+        subCategory: laptopSubCategory,
+      },
+      {
+        name: "Victus",
+        description: "ryzen, 16GB RAM",
+        price: 999.9,
+        stockQuantity: 10,
+        subCategory: laptopSubCategory,
+      },
+    ]);
+  }
 
-        const laptopSubCategory = subCategoryRepo.create({name: 'Laptops', category: computingCategory});
-        await subCategoryRepo.save(laptopSubCategory);
-
-        const macBook = productRepo.create({
-            name: 'MacBook Pro',
-            description: 'M3 Chip, 16GB RAM',
-            price: 1999.9,
-            stockQuantity: 15,
-            subCategory: laptopSubCategory
-        });
-        const victus = productRepo.create({
-            name: 'Victus',
-            description: 'ryzen, 16GB RAM',
-            price: 999.9,
-            stockQuantity: 10,
-            subCategory: laptopSubCategory
-        });
-
-        await productRepo.save(macBook);
-        await productRepo.save(victus);
-    }
-
-    public async down(queryRunner: QueryRunner): Promise<void> {
-    }
-
+  public async down(queryRunner: QueryRunner): Promise<void> {}
 }
