@@ -22,6 +22,10 @@ class CartController {
       }
       const { quantity } = req.body || 1;
 
+      if(quantity <= 0){
+        return res.status(400).json({success: false, error: "Quantity can not be Zero or Negative"})
+      }
+
       const user = (req as any).user;
 
       let cart = await this.cartRepo.findOne({
@@ -179,6 +183,31 @@ class CartController {
     await this.cartRepo.delete(cart);
 
     return res.status(200).json({success: true, message: "Cart Cleared Successfully"});
+  }
+
+  getCartTotal = async (req: Request, res: Response) => {
+    const user = (req as any).user;
+
+    const cart = await this.cartRepo.findOne({
+        where: {user: {id: user.id}},
+        relations: ["cartItems", "cartItems.product"]
+    });
+
+    if(!cart){
+        return res.json({});
+    }
+
+    const totalAmount = cart.cartItems.reduce((acc, item) => {
+        const price = item.product.price;
+        const quantity = item.quantity;
+        return acc + (price * quantity);
+    }, 0);
+
+    const totalItems = cart.cartItems.reduce((acc, item) => {
+        return acc + item.quantity;
+    }, 0);
+
+    return res.json({totalAmount, totalItems});
   }
 }
 

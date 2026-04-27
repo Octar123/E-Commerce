@@ -145,6 +145,75 @@ export class AuthController {
 
     return res.status(200).json({success: true, message: "Password Changed Successfully"});
   }
+
+  getProfile = async (req: Request, res: Response) => {
+    const userInfo = (req as any).user;
+
+    const user = await this.userRepo.findOne({
+        where: {id: userInfo.id},
+        select: ["name", "email"] 
+    });
+
+    if(!user) {
+        return res.status(404).json({success: false, error: "User Not Found"});
+    }
+
+    return res.json(user);
+  }
+
+  updateProfile = async (req: Request, res: Response) => {
+    const userInfo = (req as any).user;
+
+    const {name, email} = req.body;
+
+    const user = await this.userRepo.findOne({
+        where: {id: userInfo.id}
+    });
+
+    if(!user) {
+        return res.status(404).json({success: false, error: "User Not Found"});
+    }
+
+    if(name){
+        user.name = name;
+    }
+
+    if(email){
+        user.email = email;
+    }
+
+    await this.userRepo.save(user);
+
+    return res.status(200).json({success: true, message: "Profile Updated Successfully"});
+  }
+
+  changePassword = async(req: Request, res: Response) => {
+    const userInfo = (req as any).user;
+
+    const {password} = req.body;
+
+    const user = await this.userRepo.findOne({
+        where: {id: userInfo.id}
+    });
+
+    if(!user) {
+        return res.status(404).json({success: false, error: "User Not Found"});
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if(isMatch){
+        return res.status(400).json({success: false, error: "New password is same as old password"});
+    }
+
+    const hashPassword = await bcrypt.hash(password, 10);
+
+    user.password = hashPassword;
+
+    await this.userRepo.save(user);
+
+    res.status(200).json({success: true, message: "Password Changed Successfully"});
+  }
 }
 
 export const authController = new AuthController();

@@ -1,7 +1,10 @@
 import { NextFunction, Request, Response } from "express";
 import { sessionStore } from "../utils/sessionStore";
 import { UserRole } from "../entities/User";
+import jwt from "jsonwebtoken";
+import * as dotenv from "dotenv";
 
+dotenv.config();
 interface AuthRequest extends Request {
     user: {id: string, role: UserRole}
 }
@@ -21,7 +24,7 @@ export const requireAuth = (
         error: "Unauthorized: No session cookie found.",
       });
   }
-
+  
   const sessionData = sessionStore.get(sessionId);
 
   if (!sessionData) {
