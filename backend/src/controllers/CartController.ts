@@ -12,13 +12,13 @@ class CartController {
   private productRepo = AppDataSource.getRepository(Product);
 
   addToCart = async (req: Request, res: Response) => {
-    try{
+    try {
       const id = Number(req.params.id);
 
       if (!id) {
         return res
           .status(404)
-          .json({ success: false, error: "Produt Not Found" });
+          .json({ success: false, error: "Product Not Found" });
       }
       const { quantity } = req.body || 1;
 
@@ -26,7 +26,7 @@ class CartController {
 
       let cart = await this.cartRepo.findOne({
         where: { user: { id: user.id } },
-        relations: ["cartItems", "cartItems.product"]
+        relations: ["cartItems", "cartItems.product"],
       });
 
       if (!cart) {
@@ -38,19 +38,30 @@ class CartController {
 
       cart = await this.cartRepo.findOne({
         where: { user: { id: user.id } },
-        relations: ["cartItems", "cartItems.product"]
+        relations: ["cartItems", "cartItems.product"],
       });
 
       let cartItem = cart.cartItems.find((c) => c.product.id === id);
 
+      let product  = await this.productRepo.findOneBy({id});
+
       if (cartItem) {
-        cartItem.quantity += quantity;
+        const total = cartItem.quantity + quantity;
+        if(total > cartItem.product.stockQuantity){
+            return res.status(400).json({success: false, error: "Quantity greater than stock"});
+        }else{
+            cartItem.quantity += quantity;
+        }
       } else {
-        cartItem = this.cartItemRepo.create({
-          cart,
-          product: { id },
-          quantity
-        });
+        if(quantity > product.stockQuantity){
+            return res.status(400).json({success: false, error: "Quantity greater than stock"});
+        }else{
+            cartItem = this.cartItemRepo.create({
+              cart,
+              product: { id },
+              quantity,
+            });
+        }
       }
 
       await this.cartItemRepo.save(cartItem);
@@ -58,11 +69,117 @@ class CartController {
       res
         .status(200)
         .json({ success: true, message: "Product Added To Your Cart" });
-    }catch(error){
-        console.error(error);
-        res.status(500).json({success: false, error: "Error while Adding Product to Cart"})
+    } catch (error) {
+      console.error(error);
+      res
+        .status(500)
+        .json({ success: false, error: "Error while Adding Product to Cart" });
     }
   };
+
+  getCart = async (req: Request, res: Response) => {
+    try {
+      const user = (req as any).user;
+
+      const cart = await this.cartRepo.findOne({
+        where: { user: { id: user.id } },
+        relations: ["cartItems", "cartItems.product"],
+      });
+
+      return res.json(cart);
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ success: false, error: "Error while retreiving cart" });
+    }
+  };
+
+  updateQuantity = async (req: Request, res: Response) => {
+    try {
+      const user = (req as any).user;
+
+      const itemId = Number(req.params.itemId);
+
+      const { quantity } = req.body;
+
+      const cart = await this.cartRepo.findOne({
+        where: { user: { id: user.id } },
+        relations: ["cartItems", "cartItems.product"],
+      });
+
+      let cartItem = cart.cartItems.find((item) => item.id === itemId);
+
+      if (!cartItem) {
+        return res
+          .status(400)
+          .json({ success: false, error: "Invalid Cart Item" });
+      }
+
+      if (quantity > cartItem.product.stockQuantity) {
+        return res.status(400).json({
+          success: false,
+          error: "Quantity is greater than the Stock Quantity",
+        });
+      }
+
+      cartItem.quantity = quantity;
+
+      await this.cartItemRepo.save(cartItem);
+      res
+        .status(200)
+        .json({ success: false, message: "Quantity updated Successfully" });
+    } catch (error) {
+      res
+        .status(500)
+        .json({
+          success: false,
+          error: "Error Occurred during quantity updation",
+        });
+    }
+  };
+
+  deleteCartItem = async (req: Request, res: Response) => {
+    try{
+      const user = (req as any).user;
+
+      const itemId = Number(req.params.itemId);
+
+      const cart = await this.cartRepo.findOne({
+        where: { user: { id: user.id } },
+        relations: ["cartItems"],
+      });
+
+      const cartItem = cart.cartItems.find((item) => item.id === itemId);
+
+      if (!cartItem) {
+        return res
+          .status(404)
+          .json({ success: false, error: "Item not found" });
+      }
+
+      await this.cartItemRepo.delete(cartItem);
+
+      return res
+        .status(200)
+        .json({ success: true, message: "Item deleted successfully" });
+    }catch(error) {
+        return res.status(500).json({success: false, error: "Error while deleteing Item"});
+    }
+  };
+
+  deleteCart = async (req: Request, res: Response) => {
+    const user = (req as any).user;
+
+    const cart = await this.cartRepo.findOneBy({user: {id: user.id}});
+
+    if(!cart){
+        return res.status(404).json({success: false, error: "Cart Not Found"});
+    }
+
+    await this.cartRepo.delete(cart);
+
+    return res.status(200).json({success: true, message: "Cart Cleared Successfully"});
+  }
 }
 
 export const cartController = new CartController();

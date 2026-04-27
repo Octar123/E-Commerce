@@ -1,9 +1,12 @@
 import { Router } from "express";
 import { cartController } from "../controllers/CartController";
-import { requireAuth } from "../middlewares/AuthMiddleware";
 
 const cartRoutes = Router();
 
-cartRoutes.post("/:id/add", requireAuth, cartController.addToCart);
+cartRoutes.get("/", cartController.getCart);
+cartRoutes.post("/:id/add", cartController.addToCart);
+cartRoutes.post("/:itemId/update", cartController.updateQuantity);
+cartRoutes.delete("/:itemId/delete", cartController.deleteCartItem);
+cartRoutes.delete("/clear", cartController.deleteCart);
 
 export default cartRoutes;
