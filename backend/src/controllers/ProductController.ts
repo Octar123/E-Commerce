@@ -3,25 +3,102 @@ import { AppDataSource } from "../data-source";
 import { Product } from "../entities/Product";
 import { Type } from "../entities/Type";
 
-class ProductController{
-    private productRepo = AppDataSource.getRepository(Product);
-    private typeRepo = AppDataSource.getRepository(Type);
+class ProductController {
+  private productRepo = AppDataSource.getRepository(Product);
+  private typeRepo = AppDataSource.getRepository(Type);
 
-    getAllProducts = async (req:Request, res:Response) => {
-        const allProducts = await this.productRepo.find({
-            relations: ["subCategory"]
-        });
+  getAllProducts = async (req: Request, res: Response) => {
+    const allProducts = await this.productRepo.find({
+      relations: ["subCategory"],
+    });
 
-        return res.json(allProducts);
+    return res.json(allProducts);
+  };
+
+  getTaxonomy = async (req: Request, res: Response) => {
+    const taxonomy = await this.typeRepo.find({
+      relations: [
+        "categories",
+        "categories.subCategories",
+        "categories.subCategories.products",
+      ],
+    });
+
+    res.json(taxonomy);
+  };
+
+  searchProducts = async (req: Request, res: Response) => {
+    try{
+      const { search, subCategoryId, categoryId, typeId, minPrice, maxPrice } =
+        req.query;
+
+      const page = Number(req.query.page) || 1;
+      const limit = Number(req.query.limit) || 10;
+      const skip = (page - 1) * limit;
+
+      const dbQuery = this.productRepo
+        .createQueryBuilder("product")
+        .leftJoinAndSelect("product.subCategory", "subCategory")
+        .leftJoinAndSelect("subCategory.category", "category")
+        .leftJoinAndSelect("category.type", "type");
+
+      if (search) {
+        dbQuery.andWhere(
+          "(product.name LIKE :search OR product.description LIKE :search)",
+          { search: `%${search}%` },
+        );
+      }
+
+      if (subCategoryId) {
+        dbQuery.andWhere("subCategory.id == :subId", { subId: subCategoryId });
+      }
+      if (categoryId) {
+        dbQuery.andWhere("category.id == :catId", { catId: categoryId });
+      }
+      if (typeId) {
+        dbQuery.andWhere("type.id == :typeId", { typeId: typeId });
+      }
+
+      if (minPrice) {
+        dbQuery.andWhere("product.price >= :min", { min: minPrice });
+      }
+
+      if (maxPrice) {
+        dbQuery.andWhere("product.price <= :max", { max: maxPrice });
+      }
+
+      dbQuery.andWhere("product.stockQuantity > 0");
+
+      dbQuery.skip(skip).take(limit);
+
+      const [products, total] = await dbQuery.getManyAndCount();
+
+      res.json({
+        data: products,
+        totalCount: total,
+      });
+    }catch(error) {
+        res.status(500).json({success: false, error: "Error Occured while searching"});
+    }
+  };
+
+  getSingleProduct = async (req: Request, res: Response) => {
+    const id = Number(req.params.id);
+
+    if(!id){
+        res.status(400).json({success: false, error: "Invalid Product"});
     }
 
-    getTaxonomy = async (req: Request, res: Response) => {
-        const taxonomy = await this.typeRepo.find({
-            relations: ["categories", "categories.subCategories", "categories.subCategories.products"]
-        });
+    const product = await this.productRepo.findOne({
+        where: {id},
+        relations: ["subCategory", "subCategory.category", "subCategory.category", "subCategory.category.type"]
+    });
 
-        res.json(taxonomy);
+    if(!product){
+        return res.status(404).json({success: false, error: "No Products Found"});
     }
+    return res.json(product)
+  }
 }
 
 export const productController = new ProductController();

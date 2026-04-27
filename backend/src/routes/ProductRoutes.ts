@@ -5,5 +5,7 @@ const productRoutes = Router();
 
 productRoutes.get("/all", productController.getAllProducts);
 productRoutes.get("/taxo", productController.getTaxonomy);
+productRoutes.get("/search", productController.searchProducts);
+productRoutes.get("/:id", productController.getSingleProduct);
 
 export default productRoutes;
