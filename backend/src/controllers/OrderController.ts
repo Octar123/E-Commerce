@@ -39,7 +39,7 @@ class OrderController {
         await manager.save(order);
 
         const orderItems = cart.cartItems.map((item) => {
-          manager.create(OrderItem, {
+          return manager.create(OrderItem, {
             order,
             amountAtPurchase: item.product.price,
             product: item.product,
@@ -59,6 +59,37 @@ class OrderController {
         .json({ success: false, error: "Failed to place order" });
     }
   };
+
+  getAllOrders = async (req: Request, res: Response) => {
+    const user = (req as any).user;
+
+    const order = await this.orderRepo.find({
+        where: {user: {id: user.id}},
+        relations: ["orders", "orders.product"]
+    });
+
+    return res.json(order);
+  }
+
+  getOrderDetail = async (req: Request, res: Response) => {
+    const user = (req as any).user;
+
+    const orderId = req.params.orderId as string;
+
+    const order = await this.orderRepo.findOne({
+        where: {
+            user: {id: user.id},
+            id: orderId
+        },
+        relations: ["orders", "orders.product"] 
+    });
+
+    if(!order){
+        return res.status(404).json({success: false, error: "Order Not Found"});
+    }
+
+    return res.json(order);
+  }
 }
 
 export const orderController = new OrderController();
