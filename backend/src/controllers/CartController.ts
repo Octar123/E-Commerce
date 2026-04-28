@@ -3,7 +3,7 @@ import { AppDataSource } from "../data-source";
 import { Cart } from "../entities/Cart";
 import { CartItem } from "../entities/CartItem";
 import { Product } from "../entities/Product";
-import { User } from "../entities/User";
+import { User, UserRole } from "../entities/User";
 
 class CartController {
   private userRepo = AppDataSource.getRepository(User);
@@ -188,14 +188,21 @@ class CartController {
   getCartTotal = async (req: Request, res: Response) => {
     const user = (req as any).user;
 
+    const result = await this.getTotal(user);
+
+    return res.json(result);
+  }
+
+  getTotal = async (user: {id: string, role: UserRole}) => {
     const cart = await this.cartRepo.findOne({
         where: {user: {id: user.id}},
         relations: ["cartItems", "cartItems.product"]
     });
 
     if(!cart){
-        return res.json({});
+        return {};
     }
+
 
     const totalAmount = cart.cartItems.reduce((acc, item) => {
         const price = item.product.price;
@@ -207,7 +214,8 @@ class CartController {
         return acc + item.quantity;
     }, 0);
 
-    return res.json({totalAmount, totalItems});
+
+    return {totalAmount, totalItems};
   }
 }
 
