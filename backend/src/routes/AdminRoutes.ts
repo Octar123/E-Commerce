@@ -25,6 +25,11 @@ adminRoutes.delete("/:typeId/deleteType", adminController.deleteType);
 adminRoutes.delete("/:categoryId/deleteCategory", adminController.deleteCategory);
 adminRoutes.delete("/:subCategoryId/deleteSubCategory", adminController.deleteSubCategory);
 
-// adminRoutes.get("/users", adminController.getUsers);
+adminRoutes.get("/users", adminController.getUsers);
+adminRoutes.get("/:id/lock", adminController.lockUser);
+adminRoutes.get("/:id/unlock", adminController.unlockUser);
+
+adminRoutes.get("/orders", adminController.getOrders);
+adminRoutes.get("/orders/:id", adminController.getOrderDetail);
 
 export default adminRoutes;

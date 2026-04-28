@@ -6,12 +6,17 @@ import fs from "fs";
 import { SubCategory } from "../entities/SubCateory";
 import { Type } from "../entities/Type";
 import { Category } from "../entities/Category";
+import { User, UserRole } from "../entities/User";
+import { sessionStore } from "../utils/sessionStore";
+import { Order } from "../entities/Order";
 
 class AdminController {
     private typeRepo = AppDataSource.getRepository(Type);
     private categoryRepo = AppDataSource.getRepository(Category);
     private subCategoryRepo = AppDataSource.getRepository(SubCategory);
     private productRepo = AppDataSource.getRepository(Product);
+    private userRepo = AppDataSource.getRepository(User);
+    private orderRepo = AppDataSource.getRepository(Order);
 
   addProduct = async (req: Request, res: Response) => {
     try {
@@ -365,7 +370,84 @@ class AdminController {
   }
 
 
-  getUser = async (req: Request, res: Response) => {
+  getUsers = async (req: Request, res: Response) => {
+
+    const users = await this.userRepo.find({
+        where: {role: UserRole.USER}
+    });
+
+    return res.json(users);
+  }
+
+  lockUser = async (req: Request, res: Response) => {
+    const id = req.params.id as string;
+
+    if(!id){
+        return res.status(400).json({success: false, error: "Id is invalid"});
+    }
+
+    const user = await this.userRepo.findOneBy({
+        id
+    });
+
+    if(!user){
+        return res.status(404).json({success: false, error: "User Not Found"});
+    }
+
+    user.isLocked = true;
+
+    for(const [token, session] of sessionStore.entries()){
+        if(session.id == user.id){
+            sessionStore.delete(token);
+            break;
+        }
+    }
+
+    await this.userRepo.save(user);
+
+    return res.status(200).json({success: true, message: "User Locked Successfully"});
+  }
+
+  unlockUser = async(req: Request, res: Response) => {
+    const id = req.params.id as string;
+
+    const user = await this.userRepo.findOneBy({
+        id
+    });
+
+    if(!user){
+        return res.status(404).json({success: false, error: "User Not Found"});
+    }
+
+    user.isLocked = false;
+
+    await this.userRepo.save(user);
+
+    return res.status(200).json({success: true, message: "User Unlocked Successfully"});
+  }
+
+
+  getOrders = async(req: Request, res: Response) => {
+    const orders = await this.orderRepo.find({
+        relations: ["orders", "orders.product"]
+    });
+
+    res.json(orders);
+  }
+
+  getOrderDetail = async (req: Request, res: Response) => {
+    const id = req.params.id as string;
+
+    const order = await this.orderRepo.findOne({
+        where: {id},
+        relations: ["orders", "orders.product"]
+    });
+
+    if(!order){
+        return res.status(404).json({success: false, error: "Order Not Found"});
+    }
+
+    return res.json(order);
   }
 
 }

@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { sessionStore } from "../utils/sessionStore";
 import { UserRole } from "../entities/User";
 import * as dotenv from "dotenv";
+import { error } from "console";
 
 dotenv.config();
 interface AuthRequest extends Request {
@@ -25,7 +26,7 @@ export const requireAuth = (
   }
 
   const sessionData = sessionStore.get(sessionId);
-
+  
   if (!sessionData) {
     res.clearCookie("auth_token", { path: "/" });
     return res.status(401).json({success: false, error: "Unauthorized: Session invalid or expired"});

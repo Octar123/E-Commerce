@@ -47,7 +47,7 @@ export class AuthController {
 
     const user = await this.userRepo.findOne({
       where: {email},
-      select: ["id","email", "name", "password", "role"]
+      select: ["id","email", "name", "password", "role", "isLocked"]
     });
 
     if (!user) {
