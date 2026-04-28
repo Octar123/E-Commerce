@@ -3,10 +3,10 @@ import { AppDataSource } from "../data-source";
 import { Cart } from "../entities/Cart";
 import { CartItem } from "../entities/CartItem";
 import { Product } from "../entities/Product";
-import { User, UserRole } from "../entities/User";
+import { UserRole } from "../entities/User";
 
 class CartController {
-  private userRepo = AppDataSource.getRepository(User);
+  // private userRepo = AppDataSource.getRepository(User);
   private cartItemRepo = AppDataSource.getRepository(CartItem);
   private cartRepo = AppDataSource.getRepository(Cart);
   private productRepo = AppDataSource.getRepository(Product);

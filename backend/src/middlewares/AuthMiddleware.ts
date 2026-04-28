@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { sessionStore } from "../utils/sessionStore";
 import { UserRole } from "../entities/User";
-import jwt from "jsonwebtoken";
 import * as dotenv from "dotenv";
 
 dotenv.config();
@@ -24,7 +23,7 @@ export const requireAuth = (
         error: "Unauthorized: No session cookie found.",
       });
   }
-  
+
   const sessionData = sessionStore.get(sessionId);
 
   if (!sessionData) {
@@ -36,3 +35,12 @@ export const requireAuth = (
 
   next();
 };
+
+export const requireAdmin = (req: Request, res: Response, next: NextFunction) => {
+    const user = (req as any).user;
+    if(!user || user.role !== UserRole.ADMIN){
+        return res.status(403).json({success: false, error: "Forbidden: Admin access is required"});
+    }
+
+    next();
+}

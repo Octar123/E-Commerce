@@ -5,12 +5,12 @@ import { Order } from "../entities/Order";
 import { OrderItem } from "../entities/OrderItem";
 import { CartItem } from "../entities/CartItem";
 import { cartController } from "./CartController";
-import { UserRole } from "../entities/User";
+// import { UserRole } from "../entities/User";
 
 class OrderController {
   private cartRepo = AppDataSource.getRepository(Cart);
   private orderRepo = AppDataSource.getRepository(Order);
-  private orderItemRepo = AppDataSource.getRepository(OrderItem);
+//   private orderItemRepo = AppDataSource.getRepository(OrderItem);
 
   placeOrder = async (req: Request, res: Response) => {
     const user = (req as any).user;

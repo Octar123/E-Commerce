@@ -2,9 +2,9 @@ import { Request, Response } from "express";
 import { AppDataSource } from "../data-source";
 import { Product } from "../entities/Product";
 import { Type } from "../entities/Type";
-import { CartItem } from "../entities/CartItem";
-import { User } from "../entities/User";
-import { Cart } from "../entities/Cart";
+// import { CartItem } from "../entities/CartItem";
+// import { User } from "../entities/User";
+// import { Cart } from "../entities/Cart";
 
 class ProductController {
   private productRepo = AppDataSource.getRepository(Product);
