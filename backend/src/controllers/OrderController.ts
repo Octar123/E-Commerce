@@ -48,6 +48,9 @@ class OrderController {
         });
 
         await manager.save(orderItems);
+
+        await manager.delete(CartItem, { cart: { id: cart.id } });
+        await manager.delete(Cart, cart.id);
       });
 
       return res
