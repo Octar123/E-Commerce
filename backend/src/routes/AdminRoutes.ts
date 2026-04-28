@@ -5,8 +5,14 @@ import { upload } from "../middlewares/uploadMiddleware";
 
 const adminRoutes = Router();
 
-adminRoutes.post("/addProduct", requireAuth, requireAdmin,upload.single('imagePath'), adminController.addProduct);
-adminRoutes.put("/:id", requireAuth, requireAdmin,upload.single('imagePath'), adminController.updateProduct);
-adminRoutes.delete("/:id/delete", requireAuth, requireAdmin,upload.single('imagePath'), adminController.deleteProduct);
+adminRoutes.post("/add",upload.single('imagePath'), adminController.addProduct);
+adminRoutes.put("/:id",upload.single('imagePath'), adminController.updateProduct);
+adminRoutes.delete("/:id/delete", adminController.deleteProduct);
 
-adminRoutes.get("/getTypes", requireAuth, requireAdmin, adminController.getTypes)
+adminRoutes.get("/getTypes", adminController.getTypes);
+adminRoutes.get("/:typeId/getCategory", adminController.getCategory);
+adminRoutes.get("/:categoryId/getSubCategory", adminController.getSubCategory);
+
+adminRoutes.put("/:typeId/update", adminController.updateType)
+
+export default adminRoutes;

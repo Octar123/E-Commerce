@@ -4,14 +4,18 @@ import { Product } from "../entities/Product";
 import path from "path";
 import fs from "fs";
 import { SubCategory } from "../entities/SubCateory";
+import { Type } from "../entities/Type";
+import { Category } from "../entities/Category";
 
 class AdminController {
-  private productRepo = AppDataSource.getRepository(Product);
-  private subCategoryRepo = AppDataSource.getRepository(SubCategory);
+    private typeRepo = AppDataSource.getRepository(Type);
+    private categoryRepo = AppDataSource.getRepository(Category);
+    private subCategoryRepo = AppDataSource.getRepository(SubCategory);
+    private productRepo = AppDataSource.getRepository(Product);
 
   addProduct = async (req: Request, res: Response) => {
     try {
-      const { name, description, price, stockQuantity, subCategoryId } =
+      let { name, description, price, stockQuantity, subCategoryId } =
         req.body;
 
       if (!subCategoryId) {
@@ -21,6 +25,10 @@ class AdminController {
             success: false,
             error: "Subcategory Field must be provided",
           });
+      }
+
+      if(!name){
+        return res.status(400).json({success: false, error: "Name should be provided"});
       }
 
       const imagePath = req.file ? `/productImages/${req.file.filename}` : null;
@@ -40,6 +48,7 @@ class AdminController {
         .status(201)
         .json({ success: true, message: "Product added Successfully" });
     } catch (error) {
+        console.error(error);
       res
         .status(500)
         .json({ success: false, error: "Error while adding the product" });
@@ -109,10 +118,45 @@ class AdminController {
         if(fs.existsSync(fullPath)) fs.unlinkSync(fullPath);
     }
 
-    await this.productRepo.delete(prod);
+    await this.productRepo.delete(prod.id);
+
 
     return res.status(200).json({success: true, message: "Product Deleted Successfully"});
   };
+
+
+
+  getTypes = async (req: Request, res: Response) => {
+    const types = await this.typeRepo.find();
+
+    return res.json(types);
+  }
+
+  getCategory = async (req: Request, res: Response) => {
+    const typeId = parseInt(req.params.typeId as string);
+
+    const category = await this.typeRepo.findOne({
+        where: {id: typeId},
+        relations: ["categories"]
+    });
+
+    return res.json(category);
+  }
+
+  getSubCategory = async (req: Request, res: Response) => {
+    const categoryId = parseInt(req.params.categoryId as string);
+
+    const subCategory = await this.categoryRepo.findOne({
+        where: {id: categoryId},
+        relations: ["subCategories"]
+    });
+
+    return res.json(subCategory);
+  }
+
+  updateType = async (req: Request, res: Response) => {
+    
+  }
 }
 
 export const adminController = new AdminController();

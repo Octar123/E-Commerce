@@ -5,8 +5,9 @@ import * as dotenv from 'dotenv'
 import AuthRoutes from "./routes/AuthRoutes";
 import productRoutes from "./routes/ProductRoutes";
 import cartRoutes from "./routes/CartRoutes";
-import { requireAuth } from "./middlewares/AuthMiddleware";
+import { requireAdmin, requireAuth } from "./middlewares/AuthMiddleware";
 import OrderRoutes from "./routes/OrderRoutes";
+import adminRoutes from "./routes/AdminRoutes";
 dotenv.config();
 
 const port = process.env.PORT;
@@ -19,6 +20,8 @@ app.use("/api/auth", AuthRoutes);
 app.use("/api/product", productRoutes);
 app.use("/api/cart", requireAuth, cartRoutes);
 app.use("/api/order", requireAuth, OrderRoutes);
+
+app.use("/api/admin", requireAuth, requireAdmin, adminRoutes)
 
 AppDataSource.initialize()
     .then(() => {
