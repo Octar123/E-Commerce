@@ -155,8 +155,219 @@ class AdminController {
   }
 
   updateType = async (req: Request, res: Response) => {
-    
+
+    const {name} = req.body;
+
+    const typeId = parseInt(req.params.typeId as string);
+
+    if(!typeId){
+        return res.status(404).json({success: false, error: "Type ID Not Found"});
+    }
+
+    const type = await this.typeRepo.findOneBy({
+        id: typeId
+    });
+
+    if(!type){
+        return res.status(404).json({success: false, error: "Type Not Found"});
+    }
+
+    type.name = name;
+
+    await this.typeRepo.save(type);
+
+    return res.status(200).json({success: true, message: "Type updated succesfully"});
   }
+
+  updateCategory = async (req: Request, res: Response) => {
+
+    const {name, typeId} = req.body;
+
+    const categoryId = parseInt(req.params.categoryId as string);
+
+    if(!categoryId){
+        return res.status(404).json({success: false, error: "Category ID Not Found"});
+    }
+
+    const type = await this.typeRepo.findOne({
+        where: {id: typeId},
+        relations: ["categories"]
+    });
+
+    
+    if(!type){
+        return res.status(404).json({success: false, error: "Type Not Found"});
+    }
+
+    const category = type.categories.find((cat) => cat.id == categoryId);
+
+    
+    if(!category){
+        return res.status(404).json({success: false, error: "Category Not Found"});
+    }
+
+    category.name = name;
+
+    await this.categoryRepo.save(category);
+
+    return res.status(200).json({success: true, message: "Category updated succesfully"});
+  }
+
+  updateSubCategory = async (req: Request, res: Response) => {
+
+    const {name, categoryId} = req.body;
+
+    const subCategoryId = parseInt(req.params.subCategoryId as string);
+
+    if(!subCategoryId){
+        return res.status(404).json({success: false, error: "Sub Category ID Not Found"});
+    }
+
+    const category = await this.categoryRepo.findOne({
+        where: {id: categoryId},
+        relations: ["subCategories"]
+    });
+
+    if(!category){
+        return res.status(404).json({success: false, error: "Category Not Found"});
+    }
+
+    const subCategory = category.subCategories.find((sub) => sub.id == subCategoryId);
+
+    if(!subCategory){
+        return res.status(404).json({success: false, error: "Sub Category Not Found"});
+    }
+
+    subCategory.name = name;
+
+    await this.subCategoryRepo.save(subCategory);
+
+    return res.status(200).json({success: true, message: "Sub Category updated succesfully"});
+  };
+
+
+  addType = async (req: Request, res:Response) => {
+    const {name} = req.body;
+
+    const type = this.typeRepo.create({
+        name
+    });
+
+    await this.typeRepo.save(type);
+
+    return res.status(200).json({success: true, message: "Type Created Successfully"});
+  }
+
+  addCategory = async (req: Request, res:Response) => {
+    const typeId = parseInt(req.params.typeId as string);
+    const {name} = req.body;
+
+    const type = await this.typeRepo.findOneBy({
+        id: typeId
+    });
+
+    if(!type) {
+        return res.status(404).json({success: false, error: "Type not found"});
+    }
+
+    const category = this.categoryRepo.create({
+        name,
+        type: type
+    });
+
+    await this.categoryRepo.save(category);
+
+    return res.status(200).json({success: true, message: "Category Created Successfully"});
+  }
+
+
+  addSubCategory = async (req: Request, res:Response) => {
+    const categoryId = parseInt(req.params.categoryId as string);
+    const {name} = req.body;
+
+    const category = await this.categoryRepo.findOneBy({
+        id: categoryId
+    });
+
+    if(!category) {
+        return res.status(404).json({success: false, error: "Category not found"});
+    }
+
+    const subCategory = this.subCategoryRepo.create({
+        name,
+        category: category
+    });
+
+    await this.subCategoryRepo.save(subCategory);
+
+    return res.status(200).json({success: true, message: "Sub Category Created Successfully"});
+  }
+
+
+  deleteType = async (req: Request, res: Response) => {
+    const typeId = parseInt(req.params.typeId as string);
+
+    const type = await this.typeRepo.findOne({
+        where: { id: typeId},
+        relations: ["categories"]
+    });
+
+    console.log(type);
+
+    const categories = type.categories;
+
+    console.log(categories);
+
+    if(categories.length > 0){
+        return res.status(400).json({success: false, error: "Cannot delete type, may have categories"});
+    }
+
+    await this.typeRepo.delete(type.id);
+
+    return res.status(200).json({success: true, message: "Type Deleted Successfully"})
+  }
+
+  deleteCategory = async (req: Request, res: Response) => {
+    const categoryId = parseInt(req.params.categoryId as string);
+
+    const category = await this.categoryRepo.findOne({
+        where: { id: categoryId},
+        relations: ["subCategories"]
+    });
+
+    const subCategories = category.subCategories;
+
+    if(subCategories.length > 0){
+        return res.status(400).json({success: false, error: "Cannot delete cateogry, may have sub categories"});
+    }
+
+    await this.categoryRepo.delete(category.id);
+
+    return res.status(200).json({success: true, message: "Category Deleted Successfully"})
+  }
+  deleteSubCategory = async (req: Request, res: Response) => {
+    const subCategoryId = parseInt(req.params.subCategoryId as string);
+
+    const subCategory = await this.subCategoryRepo.findOne({
+        where: { id: subCategoryId},
+        relations: ["products"]
+    });
+
+    const products = subCategory.products;
+
+    if(products.length > 0){
+        return res.status(400).json({success: false, error: "Cannot delete sub category, may have products"});
+    }
+
+    await this.subCategoryRepo.delete(subCategory.id);
+
+    return res.status(200).json({success: true, message: "Sub Category Deleted Successfully"})
+  }
+
+
+  getUser = async (req: Request, res: Response) => {
+  }
+
 }
 
 export const adminController = new AdminController();

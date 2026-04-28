@@ -13,6 +13,18 @@ adminRoutes.get("/getTypes", adminController.getTypes);
 adminRoutes.get("/:typeId/getCategory", adminController.getCategory);
 adminRoutes.get("/:categoryId/getSubCategory", adminController.getSubCategory);
 
-adminRoutes.put("/:typeId/update", adminController.updateType)
+adminRoutes.put("/:typeId/updateType", adminController.updateType);
+adminRoutes.put("/:categoryId/updateCategory", adminController.updateCategory);
+adminRoutes.put("/:subCategoryId/updateSubCategory", adminController.updateSubCategory);
+
+adminRoutes.post("/addType", adminController.addType);
+adminRoutes.post("/:typeId/addCategory", adminController.addCategory);
+adminRoutes.post("/:categoryId/addSubCategory", adminController.addSubCategory);
+
+adminRoutes.delete("/:typeId/deleteType", adminController.deleteType);
+adminRoutes.delete("/:categoryId/deleteCategory", adminController.deleteCategory);
+adminRoutes.delete("/:subCategoryId/deleteSubCategory", adminController.deleteSubCategory);
+
+// adminRoutes.get("/users", adminController.getUsers);
 
 export default adminRoutes;
