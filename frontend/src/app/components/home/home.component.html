@@ -1,0 +1,46 @@
+<div class="home-wrapper">
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Upgrade Your Lifestyle.</h1>
+      <p>Discover the latest tech, fashion, and home essentials curated just for you.</p>
+      <div class="hero-buttons">
+        <button class="btn-primary">Shop Now</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-container">
+  <h2 class="section-title">Shop by Category</h2>
+  <div class="category-grid">
+    <div class="category-card" *ngFor="let cat of categories">
+      <div class="category-content">
+        <button class="category-action-btn">
+          {{ cat.name }}
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+  <section class="section-container">
+    <div class="section-header">
+      <h2 class="section-title">Trending Now</h2>
+      <a href="#" class="view-all">View All Products →</a>
+    </div>
+    
+    <div class="product-grid">
+      <div class="product-card" *ngFor="let product of trendingProducts">
+        <div class="product-badge">Hot</div>
+        <div class="product-img-placeholder"></div> 
+        <div class="product-info">
+          <h4>{{ product.name }}</h4>
+          <div class="product-meta">
+            <span class="price">${{ product.price }}</span>
+            <span class="rating">★ {{ product.rating }}</span>
+          </div>
+          <button class="add-to-cart">Add to Cart</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

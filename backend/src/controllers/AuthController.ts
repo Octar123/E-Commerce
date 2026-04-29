@@ -5,6 +5,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { sessionStore } from "../utils/sessionStore";
 import { otpStore } from "../utils/otpStore";
+import { AuthRequest } from "../middlewares/AuthMiddleware";
 
 export class AuthController {
   private userRepo = AppDataSource.getRepository(User);
@@ -38,7 +39,7 @@ export class AuthController {
       .json({ success: true, message: "User Registered Successfully" });
   };
 
-  login = async (req: Request, res: Response) => {
+  login = async (req: AuthRequest, res: Response) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
@@ -76,7 +77,7 @@ export class AuthController {
         expiresIn: '1d'
     });
 
-    sessionStore.set(token, {id:user.id, role: user.role});
+    sessionStore.set(token, {id:user.id, role: user.role, name: user.name});
 
     res.cookie('auth_token', token, {
         httpOnly: true,
@@ -85,10 +86,12 @@ export class AuthController {
         maxAge: 24 * 60 * 60 * 1000
     });
 
-    res.status(200).json({success: true, message: "Login Successfull", name: user.name, role: user.role});
+    req.user = {id: user.id, role: user.role, name: user.name};
+
+    res.status(200).json({success: true, message: "Login Successfull"});
   };
 
-  logout = async (req: Request, res: Response) => {
+  logout = async (req: AuthRequest, res: Response) => {
     const sessionId = req.cookies.auth_token;
 
     if(sessionId){
@@ -96,6 +99,8 @@ export class AuthController {
     }
 
     res.clearCookie('auth_token', {path: '/'});
+
+    req.user = null;
 
     res.status(200).json({success: true, message: "Logout Successfull"});
   };

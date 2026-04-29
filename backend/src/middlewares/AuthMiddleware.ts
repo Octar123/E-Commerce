@@ -5,8 +5,8 @@ import * as dotenv from "dotenv";
 import { error } from "console";
 
 dotenv.config();
-interface AuthRequest extends Request {
-    user: {id: string, role: UserRole}
+export interface AuthRequest extends Request {
+    user: {id: string, role: UserRole, name: string}
 }
 
 export const requireAuth = (
@@ -44,4 +44,22 @@ export const requireAdmin = (req: Request, res: Response, next: NextFunction) =>
     }
 
     next();
+}
+
+export const checkAuth = (req: AuthRequest, res: Response, next: NextFunction) => {
+  const sessionId = req.cookies.auth_token;
+
+  if(!sessionId) {
+    return next();
+  }
+
+  const sessionData = sessionStore.get(sessionId);
+  
+  if (!sessionData) {
+    return next();
+  }
+
+  req.user = sessionData;
+
+  next();
 }
