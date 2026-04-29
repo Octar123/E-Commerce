@@ -16,6 +16,11 @@
   margin: 0 auto;
 }
 
+a {
+  text-decoration: none;
+  color: inherit
+}
+
 .logo {
   display: flex;
   align-items: center;
@@ -63,9 +68,23 @@
   transition: transform 0.2s, background 0.3s;
 }
 
+.logout-btn {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 10px 25px;
+  border-radius: 50px; /* Pill shape */
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.2s, background 0.3s;
+}
+
 .login-action-btn:hover {
   background-color: #0056b3;
-  transform: translateY(-1px);
+}
+
+.logout-btn:hover {
+  background-color: #b91c1c;
 }
 
 .profile-btn {

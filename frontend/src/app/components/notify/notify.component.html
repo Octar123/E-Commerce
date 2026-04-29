@@ -1,0 +1,12 @@
+<div class="toast-container" *ngIf="currentToast">
+  <div class="toast-card" [ngClass]="currentToast.success ? 'success' : 'error'">
+    <div class="toast-icon">
+      <span *ngIf="currentToast.success === true">✓</span>
+      <span *ngIf="currentToast.success === false">✕</span>
+    </div>
+    <div class="toast-content">
+      {{ currentToast.message }}
+    </div>
+    <button class="toast-close" (click)="close()">&times;</button>
+  </div>
+</div>

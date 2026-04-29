@@ -1,0 +1,32 @@
+<div class="product-container">
+  <div class="product-grid">
+    <div class="product-card" *ngFor="let product of products">
+      <div class="image-wrapper">
+        <span class="badge" *ngIf="product.isNew">New</span>
+        <img [src]="product.image" [alt]="product.name">
+        <!-- <div class="hover-overlay">
+          <button class="quick-add" (click)="addToCart(product)">
+            Add to Cart
+          </button>
+        </div> -->
+      </div>
+
+      <div class="product-info">
+        <span class="category">{{ product.category }}</span>
+        <h3 class="product-name">{{ product.name }}</h3>
+        
+        <div class="rating">
+          <span class="stars">★ {{ product.rating }}</span>
+          <span class="reviews">(124)</span>
+        </div>
+
+        <div class="price-row">
+          <span class="current-price">${{ product.price | number:'1.2-2' }}</span>
+          <span class="old-price" *ngIf="product.originalPrice">
+            ${{ product.originalPrice | number:'1.2-2' }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

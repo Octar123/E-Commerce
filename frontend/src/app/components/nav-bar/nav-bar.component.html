@@ -1,22 +1,31 @@
 <nav class="navbar">
   <div class="navbar-container">
-    <div class="logo">
-      <img ngSrc="/logo.jpg" width="40" height="40" alt="Company Logo" />
-      <span class="brand-name">BrandName</span>
-    </div>
+    <a routerLink=""
+      ><div class="logo">
+        <img ngSrc="/logo.jpg" width="40" height="40" alt="Company Logo" />
+        <span class="brand-name">BrandName</span>
+      </div></a
+    >
 
     <div class="nav-actions">
-      <ng-container *ngIf="isLoggenIn.isLoggedIn$ | async as user; else loginBtn">
-        <button class="nav-btn">
-          <i class="icon-cart"></i> Cart
-        </button>
-        <button class="nav-btn">Orders</button>
-        <button class="nav-btn profile-btn">Profile</button>
-      </ng-container>
+      <ng-container *ngIf="!isAuthPage()">
+        <ng-container
+          *ngIf="isLoggenIn.isLoggedIn$ | async as user; else loginBtn"
+        >
+          <button class="nav-btn"><i class="icon-cart"></i> Cart</button>
+          <button class="nav-btn">Orders</button>
+          <button class="nav-btn profile-btn">Profile</button>
+          <button class="nav-btn logout-btn" (click)="toogleLogout()">
+            Logout
+          </button>
+        </ng-container>
 
-      <ng-template #loginBtn>
-        <button class="login-action-btn" (click)="toogleLogin()">Login</button>
-      </ng-template>
+        <ng-template #loginBtn>
+          <button class="login-action-btn" (click)="toogleLogin()">
+            Login
+          </button>
+        </ng-template>
+      </ng-container>
     </div>
   </div>
 </nav>

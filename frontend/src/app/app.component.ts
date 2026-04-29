@@ -4,6 +4,7 @@ import { RouterOutlet } from '@angular/router';
 import { tap } from 'rxjs';
 import { IsLoggedInService } from './shared/is-logged-in.service';
 import { NavBarComponent } from './components/nav-bar/nav-bar.component';
+import { NotifyComponent } from "./components/notify/notify.component";
 
 export interface UserData {
   id: string;
@@ -13,7 +14,7 @@ export interface UserData {
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, NavBarComponent],
+  imports: [RouterOutlet, NavBarComponent, NotifyComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })

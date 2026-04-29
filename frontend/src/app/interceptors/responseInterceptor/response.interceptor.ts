@@ -17,6 +17,8 @@ export const responseInterceptor: HttpInterceptorFn = (req, next) => {
         if(user === null && isLoggedInService.isLoggedIn.value !== null) {
           isLoggedInService.isLoggedIn.next(null);
           router.navigate(['/']);
+        }else if(user) {
+          isLoggedInService.isLoggedIn.next(user);
         }
       }
     })
