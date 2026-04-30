@@ -28,7 +28,9 @@ export class ProductService {
       if(value !== undefined && value !== null && value !== '') {
         params = params.set(key, value.toString());
       }
-    })
+    });
+
+    // console.log(filters);
 
     return this.http.get(`${this.apiUrl}/search`, { params});
   }

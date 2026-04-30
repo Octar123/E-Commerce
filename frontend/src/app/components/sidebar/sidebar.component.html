@@ -1,1 +1,57 @@
-<p>sidebar works!</p>
+<aside class="sidebar">
+  <!-- Search & Price Inputs -->
+  <div class="filter-section">
+    <input
+      type="text"
+      [(ngModel)]="filters.search"
+      placeholder="Search products..."
+      class="search-input"
+    />
+
+    <div class="price-range">
+      <input type="number" [(ngModel)]="filters.minPrice"  placeholder="Min $" />
+      <input type="number" [(ngModel)]="filters.maxPrice" [min]="filters.minPrice" placeholder="Max $" />
+    </div>
+
+    <button (click)="applyFilters()" class="apply-btn">Apply Filters</button>
+  </div>
+
+  <hr />
+
+  <!-- Taxonomy Navigation -->
+  <nav class="taxonomy">
+    <h3>Categories</h3>
+    <div *ngFor="let type of types" class="type-group">
+      <div class="menu-item header" (click)="toggleType(type.id)">
+        {{ type.name }}
+        <span class="arrow">{{ filters.typeId === type.id ? "▼" : "▶" }}</span>
+      </div>
+      <div *ngIf="filters.typeId === type.id" class="dropdown-content">
+        <div *ngFor="let cat of type.categories" class="category-group">
+          <div
+            class="menu-item sub-header"
+            (click)="toggleCategory(cat.id)"
+          >
+            {{ cat.name }}
+            <span class="arrow-small">{{
+              filters.categoryId === cat.id ? "▼" : "▶"
+            }}</span>
+          </div>
+
+          <ul
+            *ngIf="filters.categoryId === cat.id"
+            class="sub-dropdown-content"
+          >
+            <li
+              *ngFor="let sub of cat.subCategories"
+              (click)="selectSubCategory(sub.id)"
+              [class.active]="filters.subCategoryId === sub.id"
+            >
+              {{ sub.name }}
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </nav>
+</aside>

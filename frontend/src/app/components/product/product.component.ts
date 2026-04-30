@@ -2,10 +2,11 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ProductService } from '../../services/ProductService/product.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { SidebarComponent } from '../sidebar/sidebar.component';
 
 @Component({
   selector: 'app-product',
-  imports: [CommonModule],
+  imports: [CommonModule, SidebarComponent],
   templateUrl: './product.component.html',
   styleUrl: './product.component.css',
 })
@@ -16,6 +17,13 @@ export class ProductComponent implements OnInit {
   products: any[] = [];
 
   ngOnInit(): void {
+
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: {},
+      replaceUrl: true
+    });
+    
     this.route.queryParams.subscribe(params => {
       this.fetchData(params);
     })
@@ -32,18 +40,24 @@ export class ProductComponent implements OnInit {
       maxPrice: params['maxPrice'] || null
     }
 
+    this.fetchProducts(filters);
+  }
+
+  fetchProducts(filters: any) {
     this.productService.getProducts(filters).subscribe(data => {
       this.products = data.data;
       this.metadata = data.metadata;
     })
   }
 
-  // loadProducts(page: number) {
-  //   this.productService.getProducts(page).subscribe((data) => {
-  //     this.products = data.data;
-  //     this.metadata = data.metadata;
-  //   });
-  // }
+  handleFilters(filters: any) {
+    this.router.navigate([], {relativeTo: this.route,queryParams: filters});
+  }
+
+  getDetails(id: number){
+    this.router.navigate(['/details'])
+  }
+
 
   onPageChange(page: number) {
     if (page >= 1 && page <= this.metadata.lastPage) {
@@ -55,32 +69,5 @@ export class ProductComponent implements OnInit {
     }
   }
 
-  // products: any[] = [
-  //   {
-  //     id: 1,
-  //     name: 'Premium Wireless Headphones',
-  //     category: 'Electronics',
-  //     price: 199.99,
-  //     originalPrice: 249.99,
-  //     image:
-  //       'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500',
-  //     isNew: true,
-  //     rating: 4.8,
-  //   },
-  //   {
-  //     id: 2,
-  //     name: 'Minimalist Leather Watch',
-  //     category: 'Accessories',
-  //     price: 125.0,
-  //     image:
-  //       'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500',
-  //     isNew: false,
-  //     rating: 4.5,
-  //   },
-  //   // Add more mock products as needed...
-  // ];
 
-  addToCart(product: any) {
-    console.log(`Added ${product.name} to cart`);
-  }
 }

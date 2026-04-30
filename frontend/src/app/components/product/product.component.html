@@ -1,45 +1,57 @@
-<div class="product-container">
-  <div class="product-grid">
-    <div class="product-card" *ngFor="let product of products">
-      <div class="image-wrapper">
-        <span class="badge" *ngIf="product.isNew">New</span>
-        <img [src]="product.image ? product.image : 'default.jpg'" [alt]="product.name">
-      </div>
-
-      <div class="product-info">
-        <span class="category">{{ product.category }}</span>
-        <h3 class="product-name">{{ product.name }}</h3>
-        
-        <div class="rating">
-          <span class="stars">★ {{ product.rating }}</span>
-          <span class="reviews">(124)</span>
+<div class="product-wrapper">
+  <aside class="sidebar">
+    <app-sidebar (filterChanged)="handleFilters($event)"></app-sidebar>
+  </aside>
+  <main class="product-container">
+    <div class="product-grid">
+      <div (click)="getDetails(product.id)" class="product-card" *ngFor="let product of products">
+        <div class="image-wrapper">
+          <span class="badge" *ngIf="product.isNew">New</span>
+          <img
+            [src]="product.image ? product.image : 'default.jpg'"
+            [alt]="product.name"
+          />
         </div>
 
-        <div class="price-row">
-          <span class="current-price">${{ product.price | number:'1.2-2' }}</span>
-          <span class="old-price" *ngIf="product.originalPrice">
-            ${{ product.originalPrice | number:'1.2-2' }}
-          </span>
+        <div class="product-info">
+          <span class="category">{{ product.category }}</span>
+          <h3 class="product-name">{{ product.name }}</h3>
+
+          <div class="rating">
+            <span class="stars">★ {{ product.rating }}</span>
+            <span class="reviews">(124)</span>
+          </div>
+
+          <div class="price-row">
+            <span class="current-price"
+              >${{ product.price | number: "1.2-2" }}</span
+            >
+            <span class="old-price" *ngIf="product.originalPrice">
+              ${{ product.originalPrice | number: "1.2-2" }}
+            </span>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <div class="pagination-wrapper" *ngIf="metadata">
-    <button 
-      (click)="onPageChange(metadata.currentPage - 1)" 
-      [disabled]="metadata.currentPage === 1">
-      Previous
-    </button>
+    <div class="pagination-wrapper" *ngIf="metadata">
+      <button
+        (click)="onPageChange(metadata.currentPage - 1)"
+        [disabled]="metadata.currentPage === 1"
+      >
+        Previous
+      </button>
 
-    <span class="page-info">
-      Page {{ metadata.currentPage }} of {{ metadata.lastPage }}
-    </span>
+      <span class="page-info">
+        Page {{ metadata.currentPage }} of {{ metadata.lastPage }}
+      </span>
 
-    <button 
-      (click)="onPageChange(metadata.currentPage + 1)" 
-      [disabled]="metadata.currentPage === metadata.lastPage">
-      Next
-    </button>
-  </div>
+      <button
+        (click)="onPageChange(metadata.currentPage + 1)"
+        [disabled]="metadata.currentPage === metadata.lastPage"
+      >
+        Next
+      </button>
+    </div>
+  </main>
 </div>
