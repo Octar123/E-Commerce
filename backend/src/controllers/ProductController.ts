@@ -10,31 +10,31 @@ class ProductController {
   private productRepo = AppDataSource.getRepository(Product);
   private typeRepo = AppDataSource.getRepository(Type);
 
-  getAllProducts = async (req: Request, res: Response) => {
-    const page = Math.max(1, parseInt(req.body.page) || 1);
-    const pageSize = 9;
+  // getAllProducts = async (req: Request, res: Response) => {
+  //   const page = Math.max(1, parseInt(req.body.page) || 1);
+  //   const pageSize = 9;
 
-    const skip = (page - 1) * pageSize;
+  //   const skip = (page - 1) * pageSize;
 
-    const dbQuery = this.productRepo
-      .createQueryBuilder("product")
-      .leftJoinAndSelect("product.subCategory", "subCategory")
-      .skip(skip)
-      .take(pageSize);
+  //   const dbQuery = this.productRepo
+  //     .createQueryBuilder("product")
+  //     .leftJoinAndSelect("product.subCategory", "subCategory")
+  //     .skip(skip)
+  //     .take(pageSize);
 
-    const [products, totalItems] = await dbQuery.getManyAndCount();
+  //   const [products, totalItems] = await dbQuery.getManyAndCount();
 
-    const lastPage = Math.ceil(totalItems / pageSize);
+  //   const lastPage = Math.ceil(totalItems / pageSize);
 
-    return res.json({
-      data: products,
-      metadata: {
-        totalItems,
-        lastPage,
-        currentPage: page,
-      },
-    });
-  };
+  //   return res.json({
+  //     data: products,
+  //     metadata: {
+  //       totalItems,
+  //       lastPage,
+  //       currentPage: page,
+  //     },
+  //   });
+  // };
 
   getTaxonomy = async (req: Request, res: Response) => {
     const taxonomy = await this.typeRepo.find({
@@ -45,7 +45,7 @@ class ProductController {
       ],
     });
 
-    res.json(taxonomy);
+    res.json({types: taxonomy});
   };
 
   searchProducts = async (req: Request, res: Response) => {

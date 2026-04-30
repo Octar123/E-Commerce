@@ -3,12 +3,7 @@
     <div class="product-card" *ngFor="let product of products">
       <div class="image-wrapper">
         <span class="badge" *ngIf="product.isNew">New</span>
-        <img [src]="product.image" [alt]="product.name">
-        <!-- <div class="hover-overlay">
-          <button class="quick-add" (click)="addToCart(product)">
-            Add to Cart
-          </button>
-        </div> -->
+        <img [src]="product.image ? product.image : 'default.jpg'" [alt]="product.name">
       </div>
 
       <div class="product-info">
@@ -28,5 +23,23 @@
         </div>
       </div>
     </div>
+  </div>
+
+  <div class="pagination-wrapper" *ngIf="metadata">
+    <button 
+      (click)="onPageChange(metadata.currentPage - 1)" 
+      [disabled]="metadata.currentPage === 1">
+      Previous
+    </button>
+
+    <span class="page-info">
+      Page {{ metadata.currentPage }} of {{ metadata.lastPage }}
+    </span>
+
+    <button 
+      (click)="onPageChange(metadata.currentPage + 1)" 
+      [disabled]="metadata.currentPage === metadata.lastPage">
+      Next
+    </button>
   </div>
 </div>

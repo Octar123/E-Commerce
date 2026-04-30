@@ -1,6 +1,16 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+
+interface ProductFilters {
+  page?: number;
+  search?: string;
+  subCategoryId?: number;
+  categoryId?: number;
+  typeId?: number;
+  minPrice?: number;
+  maxPrice?: number;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +21,19 @@ export class ProductService {
 
   constructor(private http: HttpClient) { }
 
-  getProducts():Observable<any>{
-    return this.http.post(`${this.apiUrl}/all`, {});
+  getProducts(filters: ProductFilters):Observable<any>{
+    let params = new HttpParams();
+
+    Object.entries(filters).forEach(([key, value]) => {
+      if(value !== undefined && value !== null && value !== '') {
+        params = params.set(key, value.toString());
+      }
+    })
+
+    return this.http.get(`${this.apiUrl}/search`, { params});
+  }
+
+  getTaxonomy(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/taxo`);
   }
 }

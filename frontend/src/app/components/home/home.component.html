@@ -4,25 +4,25 @@
       <h1>Upgrade Your Lifestyle.</h1>
       <p>Discover the latest tech, fashion, and home essentials curated just for you.</p>
       <div class="hero-buttons">
-        <button class="btn-primary">Shop Now</button>
+        <button class="btn-primary" (click)="loadProducts(1)">Shop Now</button>
       </div>
     </div>
   </section>
 
   <section class="section-container">
-  <h2 class="section-title">Shop by Category</h2>
+  <h2 class="section-title">Shop by Type</h2>
   <div class="category-grid">
-    <div class="category-card" *ngFor="let cat of categories">
+    <div class="category-card" *ngFor="let type of taxonomy">
       <div class="category-content">
-        <button class="category-action-btn">
-          {{ cat.name }}
+        <button class="category-action-btn" (click)="loadProductWithType(type.id)">
+          {{ type.name }}
         </button>
       </div>
     </div>
   </div>
 </section>
 
-  <section class="section-container">
+  <!-- <section class="section-container">
     <div class="section-header">
       <h2 class="section-title">Trending Now</h2>
       <a href="#" class="view-all">View All Products →</a>
@@ -42,5 +42,5 @@
         </div>
       </div>
     </div>
-  </section>
+  </section> -->
 </div>
