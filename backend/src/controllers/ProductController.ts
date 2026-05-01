@@ -133,7 +133,7 @@ class ProductController {
         .status(404)
         .json({ success: false, error: "No Products Found" });
     }
-    return res.json(product);
+    return res.json({product});
   };
 }
 

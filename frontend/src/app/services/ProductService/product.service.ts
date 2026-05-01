@@ -30,12 +30,18 @@ export class ProductService {
       }
     });
 
-    // console.log(filters);
-
     return this.http.get(`${this.apiUrl}/search`, { params});
   }
 
   getTaxonomy(): Observable<any> {
     return this.http.get(`${this.apiUrl}/taxo`);
   }
+
+  getProductDetail(id: number): Observable<any>{
+    return this.http.get(`${this.apiUrl}/${id}`);
+  }
+
+  // addToCart():Observable<any> {
+
+  // }
 }

@@ -24,7 +24,7 @@ export class HomeComponent implements OnInit {
     this.router.navigate(['/products'])
   }
 
-  // loadProductWithType(typeId: number) {
-  //   this.router.navigate(['/products'], {queryParams: {typeId}});
-  // }
+  loadProductWithType(typeId: number) {
+    this.router.navigate(['/products'], {queryParams: {typeId}});
+  }
 }

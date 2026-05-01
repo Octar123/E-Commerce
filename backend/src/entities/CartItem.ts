@@ -13,6 +13,6 @@ export class CartItem {
     @ManyToOne(() => Cart, (cart) => cart.cartItems, {onDelete: 'CASCADE'})
     cart: Cart;
 
-    @ManyToOne(() => Product, (product) => product.cartItems)
+    @ManyToOne(() => Product, (product) => product.cartItems, {onDelete: 'CASCADE'})
     product: Product;
 }

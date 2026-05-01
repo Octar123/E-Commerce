@@ -18,11 +18,11 @@ export class ProductComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: {},
-      replaceUrl: true
-    });
+    // this.router.navigate([], {
+    //   relativeTo: this.route,
+    //   queryParams: {},
+    //   replaceUrl: true
+    // });
     
     this.route.queryParams.subscribe(params => {
       this.fetchData(params);
@@ -55,7 +55,7 @@ export class ProductComponent implements OnInit {
   }
 
   getDetails(id: number){
-    this.router.navigate(['/details'])
+    this.router.navigate(['/details', id])
   }
 
 

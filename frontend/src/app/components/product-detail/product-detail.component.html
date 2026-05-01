@@ -1,0 +1,63 @@
+<div class="container" *ngIf="product">
+  <!-- Breadcrumbs -->
+  <nav class="breadcrumbs">
+    <span>{{ product.subCategory.category.type.name }}</span>
+    <span class="sep">/</span>
+    <span>{{ product.subCategory.category.name }}</span>
+    <span class="sep">/</span>
+    <span class="active">{{ product.subCategory.name }}</span>
+  </nav>
+
+  <div class="product-wrapper">
+    <!-- Left: Image Gallery -->
+    <div class="image-section">
+      <div class="main-image">
+        <!-- Using a placeholder if imagePath is null -->
+        <img [src]="product.imagePath || 'default.jpg'" [alt]="product.name">
+      </div>
+    </div>
+
+    <!-- Right: Product Details -->
+    <div class="details-section">
+      <span class="stock-badge" [class.low-stock]="product.stockQuantity < 5">
+        {{ product.stockQuantity > 0 ? 'In Stock (' + product.stockQuantity + ')' : 'Out of Stock' }}
+      </span>
+
+      <h1 class="product-title">{{ product.name }}</h1>
+      <p class="description">{{ product.description }}</p>
+
+      <div class="price-box">
+        <span class="currency">$</span>
+        <span class="amount">{{ product.price | number:'1.2-2' }}</span>
+      </div>
+
+      <hr class="divider">
+
+      <!-- Actions -->
+      <div class="action-rows">
+        <div class="quantity-selector">
+          <label>Quantity</label>
+          <div class="counter">
+            <button (click)="updateQuantity(-1)">-</button>
+            <input type="number" [(ngModel)]="quantity" readonly>
+            <button (click)="updateQuantity(1)">+</button>
+          </div>
+        </div>
+
+        <div class="button-group">
+          <button class="btn-primary" (click)="addToCart()">
+            Add to Cart
+          </button>
+          <button class="btn-share" (click)="shareProduct()" title="Share URL">
+            <span class="share-icon">🔗</span> Share
+          </button>
+        </div>
+      </div>
+
+      <div class="info-footer">
+        <p><strong>SKU:</strong> 00{{ product.id }}-PRO</p>
+        <p><strong>Category:</strong> {{ product.subCategory.name }}</p>
+      </div>
+    </div>
+  </div>
+</div>
