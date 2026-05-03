@@ -1,0 +1,61 @@
+<div class="cart-container" *ngIf="cartItems">
+  <header class="cart-header">
+    <h1>Shopping Cart</h1>
+    <p>Welcome back, <strong>{{ user.name }}</strong>. You have {{ cartItems.length }} items.</p>
+  </header>
+
+  <div class="cart-content">
+    <!-- Items List -->
+    <div class="items-section">
+      <div class="cart-item" *ngFor="let item of cartItems; let i = index">
+        <div class="item-img">
+          <img [src]="item.product.imagePath || 'default.jpg'" alt="Product">
+        </div>
+        
+        <div class="item-details">
+          <h3>{{ item.product.name }}</h3>
+          <p class="desc">{{ item.product.description }}</p>
+          <span class="unit-price">${{ item.product.price | number:'1.2-2' }}</span>
+        </div>
+
+        <div class="item-actions">
+          <div class="qty-control">
+            <button (click)="updateQuantity(item, -1)">-</button>
+            <span>{{ item.quantity }}</span>
+            <button (click)="updateQuantity(item, 1)">+</button>
+          </div>
+          <button class="delete-btn" (click)="removeItem(i, item)" title="Remove Item">
+            🗑️
+          </button>
+        </div>
+
+        <div class="item-total">
+          ${{ (item.product.price * item.quantity) | number:'1.2-2' }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Summary Sidebar -->
+    <aside class="summary-section">
+      <div class="summary-card">
+        <h2>Order Summary</h2>
+        <div class="summary-row">
+          <span>Subtotal</span>
+          <span>${{ totalAmount | number:'1.2-2' }}</span>
+        </div>
+        <div class="summary-row">
+          <span>Shipping</span>
+          <span class="free">Free</span>
+        </div>
+        <hr>
+        <div class="summary-row total">
+          <span>Total</span>
+          <span>${{ totalAmount | number:'1.2-2' }}</span>
+        </div>
+        <button class="order-btn" (click)="placeOrder()">
+          Order Now
+        </button>
+      </div>
+    </aside>
+  </div>
+</div>

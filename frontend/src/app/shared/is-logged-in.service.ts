@@ -8,8 +8,10 @@ import { UserData } from '../app.component';
 export class IsLoggedInService {
 
   isLoggedIn = new BehaviorSubject<UserData | null>(null);
+  isInitialized = new BehaviorSubject<boolean>(false);
 
   isLoggedIn$ = this.isLoggedIn.asObservable();
+  isInitialized$ = this.isInitialized.asObservable();
   constructor() { }
 
 }

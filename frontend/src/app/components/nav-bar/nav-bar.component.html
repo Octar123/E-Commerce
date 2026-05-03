@@ -12,7 +12,7 @@
         <ng-container
           *ngIf="isLoggenIn.isLoggedIn$ | async as user; else loginBtn"
         >
-          <button class="nav-btn"><i class="icon-cart"></i> Cart</button>
+          <button class="nav-btn" (click)="navigateCart()"><i class="icon-cart"></i> Cart</button>
           <button class="nav-btn">Orders</button>
           <button class="nav-btn profile-btn">Profile</button>
           <button class="nav-btn logout-btn" (click)="toogleLogout()">

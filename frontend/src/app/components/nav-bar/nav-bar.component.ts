@@ -31,5 +31,9 @@ export class NavBarComponent{
     const url = this.router.url;
     return url.includes('/login') || url.includes('/register');
   }
+
+  navigateCart() {
+    this.router.navigate(['/cart']);
+  }
   
 }
