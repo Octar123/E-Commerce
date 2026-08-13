@@ -13,4 +13,4 @@ COPY . .
 EXPOSE 3001
 
 # Start the server using ts-node since TypeORM expects .ts entities
-CMD ["npx", "ts-node", "src/index.ts"]
+CMD ["sh", "-c", "npm run migration:run && npx ts-node src/index.ts"]
