@@ -8,7 +8,7 @@ export const AppDataSource = new DataSource({
     type: "better-sqlite3",
     database: dbName || "database.db",
     synchronize: false,
-    logging: true,
+    logging: false,
     entities: ["src/entities/*.ts"],
     migrations: ["src/migrations/*.ts"]
 });

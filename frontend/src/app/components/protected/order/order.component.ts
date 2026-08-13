@@ -26,7 +26,8 @@ export class OrderComponent implements OnInit {
     this.error.set(null);
     this.orderService.getAllOrders().subscribe({
       next: (data) => {
-        this.orders.set(Array.isArray(data) ? data : []);
+        console.log(data)
+        this.orders.set(data ? [data] : []);
         this.loading.set(false);
       },
       error: () => {

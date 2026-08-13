@@ -1,41 +1,60 @@
-<aside class="sidebar">
-  <!-- Search & Price Inputs -->
-  <div class="filter-section">
-    <input
-      type="text"
-      [(ngModel)]="filters.search"
-      placeholder="Search products..."
-      class="search-input"
-    />
-
-    <div class="price-range">
-      <input type="number" [(ngModel)]="filters.minPrice"  placeholder="Min $" />
-      <input type="number" [(ngModel)]="filters.maxPrice" [min]="filters.minPrice" placeholder="Max $" />
-    </div>
-
-    <button (click)="applyFilters()" class="apply-btn">Apply Filters</button>
+<aside class="sidebar-container">
+  <div class="filter-header">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="filter-title-icon"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+    <h2>Filters</h2>
   </div>
 
-  <hr />
+  <!-- Search & Price Inputs -->
+  <div class="filter-section">
+    <div class="search-wrapper">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="search-icon"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      <input
+        type="text"
+        [(ngModel)]="filters.search"
+        placeholder="Search products..."
+        class="search-input"
+      />
+    </div>
+
+    <div class="price-section">
+      <span class="section-subtitle">Price Range</span>
+      <div class="price-range">
+        <div class="input-prefix-wrapper">
+          <span class="prefix">$</span>
+          <input type="number" [(ngModel)]="filters.minPrice" placeholder="Min" />
+        </div>
+        <div class="input-prefix-wrapper">
+          <span class="prefix">$</span>
+          <input type="number" [(ngModel)]="filters.maxPrice" [min]="filters.minPrice" placeholder="Max" />
+        </div>
+      </div>
+    </div>
+
+    <button (click)="applyFilters()" class="apply-btn">
+      <span>Apply Filters</span>
+    </button>
+  </div>
+
+  <div class="divider"></div>
 
   <!-- Taxonomy Navigation -->
   <nav class="taxonomy">
     <h3>Categories</h3>
     <div *ngFor="let type of types" class="type-group">
-      <div class="menu-item header" (click)="toggleType(type.id)">
-        {{ type.name }}
-        <span class="arrow">{{ filters.typeId === type.id ? "▼" : "▶" }}</span>
+      <div class="menu-item header" (click)="toggleType(type.id)" [class.active-type]="filters.typeId === type.id">
+        <span class="type-name">{{ type.name }}</span>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="arrow" [class.rotated]="filters.typeId === type.id"><polyline points="6 9 12 15 18 9"></polyline></svg>
       </div>
+      
       <div *ngIf="filters.typeId === type.id" class="dropdown-content">
         <div *ngFor="let cat of type.categories" class="category-group">
           <div
             class="menu-item sub-header"
             (click)="toggleCategory(cat.id)"
+            [class.active-category]="filters.categoryId === cat.id"
           >
-            {{ cat.name }}
-            <span class="arrow-small">{{
-              filters.categoryId === cat.id ? "▼" : "▶"
-            }}</span>
+            <span class="category-name">{{ cat.name }}</span>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="arrow-small" [class.rotated]="filters.categoryId === cat.id"><polyline points="6 9 12 15 18 9"></polyline></svg>
           </div>
 
           <ul
@@ -47,6 +66,7 @@
               (click)="selectSubCategory(sub.id)"
               [class.active]="filters.subCategoryId === sub.id"
             >
+              <span class="dot"></span>
               {{ sub.name }}
             </li>
           </ul>

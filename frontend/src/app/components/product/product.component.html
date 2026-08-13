@@ -1,11 +1,22 @@
 <div class="product-wrapper">
-  <aside class="sidebar">
+  <aside class="sidebar-wrapper">
     <app-sidebar (filterChanged)="handleFilters($event)"></app-sidebar>
   </aside>
   <main class="product-container">
-    <div class="orders-loading" *ngIf="loading()">Loading products...</div>
-    <div class="orders-error" *ngIf="error()">{{ error() }}</div>
+    <!-- Loading Spinner & Skeletons -->
+    <div class="loading-state" *ngIf="loading()">
+      <div class="spinner-glow"></div>
+      <div class="spinner"></div>
+      <span class="loading-text">Fetching premium items...</span>
+    </div>
 
+    <!-- Error State -->
+    <div class="error-state" *ngIf="error()">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="error-icon"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+      <span class="error-text">{{ error() }}</span>
+    </div>
+
+    <!-- Products Grid -->
     <div class="product-grid" *ngIf="!loading()">
       <div
         (click)="getDetails(product.id)"
@@ -13,25 +24,28 @@
         *ngFor="let product of products()"
       >
         <div class="image-wrapper">
-          <span class="badge" *ngIf="product.isNew">New</span>
+          <span class="badge badge-new" *ngIf="product.isNew">New</span>
+          <span class="badge badge-sale" *ngIf="product.originalPrice && product.originalPrice > product.price">Sale</span>
           <img
             [src]="product.imagePath || 'default.jpg'"
             [alt]="product.name"
+            class="product-img"
           />
         </div>
 
         <div class="product-info">
-          <span class="category">{{ product.category }}</span>
+          <div class="meta-row">
+            <span class="category">{{ product.category || 'Product' }}</span>
+            <div class="rating" *ngIf="product.rating">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="star-icon"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+              <span class="stars-val">{{ product.rating }}</span>
+            </div>
+          </div>
+          
           <h3 class="product-name">{{ product.name }}</h3>
 
-          <div class="rating" *ngIf="product.rating">
-            <span class="stars">★ {{ product.rating }}</span>
-          </div>
-
           <div class="price-row">
-            <span class="current-price"
-              >${{ product.price | number: '1.2-2' }}</span
-            >
+            <span class="current-price">${{ product.price | number: '1.2-2' }}</span>
             <span class="old-price" *ngIf="product.originalPrice">
               ${{ product.originalPrice | number: '1.2-2' }}
             </span>
@@ -40,25 +54,30 @@
       </div>
     </div>
 
+    <!-- Pagination -->
     <div class="pagination-wrapper" *ngIf="metadata() as meta">
       <button
         type="button"
         (click)="onPageChange(meta.currentPage - 1)"
         [disabled]="meta.currentPage === 1"
+        class="page-btn"
       >
-        Previous
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="arrow-page"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        <span>Previous</span>
       </button>
 
       <span class="page-info">
-        Page {{ meta.currentPage }} of {{ meta.lastPage }}
+        Page <strong>{{ meta.currentPage }}</strong> of {{ meta.lastPage }}
       </span>
 
       <button
         type="button"
         (click)="onPageChange(meta.currentPage + 1)"
         [disabled]="meta.currentPage === meta.lastPage"
+        class="page-btn"
       >
-        Next
+        <span>Next</span>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="arrow-page"><polyline points="9 18 15 12 9 6"></polyline></svg>
       </button>
     </div>
   </main>
