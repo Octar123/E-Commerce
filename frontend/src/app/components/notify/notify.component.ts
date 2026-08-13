@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ResponseData } from '../../services/AuthService/auth.service';
+import { ApiResponse } from '../../models/api-response.model';
 import { NotifyService } from '../../services/NotifyService/notify.service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -11,7 +11,7 @@ import { CommonModule } from '@angular/common';
   styleUrl: './notify.component.css',
 })
 export class NotifyComponent implements OnInit {
-  currentToast: ResponseData | null = null;
+  currentToast: Pick<ApiResponse, 'success' | 'message'> | null = null;
 
   constructor(private notifyService: NotifyService) {}
 

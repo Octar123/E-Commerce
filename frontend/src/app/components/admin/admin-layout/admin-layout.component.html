@@ -1,0 +1,15 @@
+<div class="admin-shell">
+  <aside class="admin-sidebar">
+    <h2>Admin</h2>
+    <nav>
+      <a routerLink="/admin/products" routerLinkActive="active">Products</a>
+      <a routerLink="/admin/taxonomy" routerLinkActive="active">Taxonomy</a>
+      <a routerLink="/admin/users" routerLinkActive="active">Users</a>
+      <a routerLink="/admin/orders" routerLinkActive="active">Orders</a>
+      <a routerLink="/">Back to store</a>
+    </nav>
+  </aside>
+  <main class="admin-content">
+    <router-outlet></router-outlet>
+  </main>
+</div>

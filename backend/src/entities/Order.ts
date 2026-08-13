@@ -5,7 +5,7 @@ import { OrderItem } from "./OrderItem";
 export enum paymentMethods{
     ONLINE="online",
     DEBIT="debit card",
-    CREDIT="creadit card",
+    CREDIT="credit card",
     CASH="cash"
 }
 

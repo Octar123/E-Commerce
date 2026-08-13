@@ -1,30 +1,32 @@
 import { CommonModule, NgOptimizedImage } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { IsLoggedInService } from '../../shared/is-logged-in.service';
-import { UserData } from '../../app.component';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../services/AuthService/auth.service';
 
 @Component({
   selector: 'app-nav-bar',
-  imports: [CommonModule, NgOptimizedImage, RouterLink],
+  imports: [CommonModule, NgOptimizedImage, RouterLink, RouterLinkActive],
   templateUrl: './nav-bar.component.html',
-  styleUrl: './nav-bar.component.css'
+  styleUrl: './nav-bar.component.css',
 })
-export class NavBarComponent{
+export class NavBarComponent {
+  constructor(
+    public authState: IsLoggedInService,
+    private router: Router,
+    private authService: AuthService,
+  ) {}
 
-  constructor(public isLoggenIn: IsLoggedInService, private router: Router, private authService: AuthService) {}
-  
-  toogleLogin() {
+  toggleLogin(): void {
     this.router.navigate(['/login']);
   }
 
-  toogleLogout() {
+  toggleLogout(): void {
     this.authService.logout().subscribe({
-      next: data => {
-        this.isLoggenIn.isLoggedIn.next(null);
-      }
-    })
+      next: () => {
+        this.authState.setUser(null);
+      },
+    });
   }
 
   isAuthPage(): boolean {
@@ -32,8 +34,7 @@ export class NavBarComponent{
     return url.includes('/login') || url.includes('/register');
   }
 
-  navigateCart() {
+  navigateCart(): void {
     this.router.navigate(['/cart']);
   }
-  
 }

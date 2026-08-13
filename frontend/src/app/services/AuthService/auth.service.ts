@@ -1,37 +1,63 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { IsLoggedInService } from '../../shared/is-logged-in.service';
 import { Observable } from 'rxjs';
-
-export interface ResponseData {
-  success: boolean;
-  message?: string;
-  error?: string;
-}
+import { environment } from '../../../environments/environment';
+import { ApiResponse, SessionResponse } from '../../models/api-response.model';
+import { UserProfile } from '../../models/user.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:3001/api/auth';
-  constructor(
-    private http: HttpClient,
-    private isLoggedIn: IsLoggedInService,
-  ) {}
+  private readonly apiUrl = `${environment.apiBaseUrl}/api/auth`;
+  private readonly meUrl = `${environment.apiBaseUrl}/me`;
+
+  constructor(private http: HttpClient) {}
+
+  checkSession(): Observable<SessionResponse> {
+    return this.http.get<SessionResponse>(this.meUrl);
+  }
 
   login(credentials: {
-    email: string,
-    password: string
-  }): Observable<ResponseData> {
-    return this.http
-      .post<ResponseData>(`${this.apiUrl}/login`, credentials);
+    email: string;
+    password: string;
+  }): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(`${this.apiUrl}/login`, credentials);
   }
 
-  register(credentials: {name: string, email:string, password: string}): Observable<any> {
-    return this.http.post<ResponseData>(`${this.apiUrl}/register`, credentials);
+  register(credentials: {
+    name: string;
+    email: string;
+    password: string;
+  }): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(`${this.apiUrl}/register`, credentials);
   }
 
-  logout(): Observable<ResponseData> {
-    return this.http.get<ResponseData>(`${this.apiUrl}/logout`);
+  logout(): Observable<ApiResponse> {
+    return this.http.get<ApiResponse>(`${this.apiUrl}/logout`);
+  }
+
+  getProfile(): Observable<UserProfile> {
+    return this.http.get<UserProfile>(`${this.apiUrl}/getProfile`);
+  }
+
+  updateProfile(data: { name?: string; email?: string }): Observable<ApiResponse> {
+    return this.http.patch<ApiResponse>(`${this.apiUrl}/update`, data);
+  }
+
+  changePassword(password: string): Observable<ApiResponse> {
+    return this.http.patch<ApiResponse>(`${this.apiUrl}/change`, { password });
+  }
+
+  forgotPassword(email: string): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(`${this.apiUrl}/forgot`, { email });
+  }
+
+  resetPassword(data: {
+    email: string;
+    code: string;
+    password: string;
+  }): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(`${this.apiUrl}/reset`, data);
   }
 }

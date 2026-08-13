@@ -1,0 +1,42 @@
+<div class="admin-page">
+  <header>
+    <h1>Users</h1>
+    <p>Lock or unlock customer accounts.</p>
+  </header>
+
+  <section class="admin-card">
+    <p *ngIf="loading()">Loading users...</p>
+    <table *ngIf="!loading()">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of users()">
+          <td>{{ user.name }}</td>
+          <td>{{ user.email }}</td>
+          <td>{{ user.role }}</td>
+          <td>{{ user.isLocked ? 'Locked' : 'Active' }}</td>
+          <td>
+            <button
+              type="button"
+              class="danger"
+              *ngIf="!user.isLocked"
+              (click)="lock(user)"
+            >
+              Lock
+            </button>
+            <button type="button" *ngIf="user.isLocked" (click)="unlock(user)">
+              Unlock
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+</div>

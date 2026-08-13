@@ -1,0 +1,96 @@
+<div class="admin-page">
+  <header>
+    <h1>Products</h1>
+    <p>Create, update, and remove catalog products.</p>
+  </header>
+
+  <section class="admin-card">
+    <h2>{{ editingId ? 'Edit Product' : 'Add Product' }}</h2>
+    <form class="admin-form" (ngSubmit)="saveProduct()">
+      <label>
+        Name
+        <input name="name" [(ngModel)]="form.name" required />
+      </label>
+      <label>
+        Description
+        <textarea
+          name="description"
+          [(ngModel)]="form.description"
+          rows="3"
+        ></textarea>
+      </label>
+      <div class="row">
+        <label>
+          Price
+          <input
+            type="number"
+            name="price"
+            [(ngModel)]="form.price"
+            step="0.01"
+            required
+          />
+        </label>
+        <label>
+          Stock
+          <input
+            type="number"
+            name="stockQuantity"
+            [(ngModel)]="form.stockQuantity"
+            required
+          />
+        </label>
+      </div>
+      <label>
+        Subcategory
+        <select name="subCategoryId" [(ngModel)]="form.subCategoryId" required>
+          <option [ngValue]="0" disabled>Select subcategory</option>
+          <option *ngFor="let sub of subCategories()" [ngValue]="sub.id">
+            {{ sub.name }}
+          </option>
+        </select>
+      </label>
+      <label>
+        Image
+        <input type="file" accept="image/*" (change)="onFileChange($event)" />
+      </label>
+      <div class="actions">
+        <button type="submit">{{ editingId ? 'Update' : 'Create' }}</button>
+        <button type="button" class="secondary" *ngIf="editingId" (click)="resetForm()">
+          Cancel
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <section class="admin-card">
+    <h2>Catalog</h2>
+    <p *ngIf="loading()">Loading...</p>
+    <table *ngIf="!loading()">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Price</th>
+          <th>Stock</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let product of products()">
+          <td>{{ product.name }}</td>
+          <td>${{ product.price | number: '1.2-2' }}</td>
+          <td>{{ product.stockQuantity }}</td>
+          <td class="table-actions">
+            <button type="button" (click)="startEdit(product)">Edit</button>
+            <button
+              type="button"
+              class="danger"
+              (click)="deleteProduct(product.id)"
+            >
+              Delete
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+</div>

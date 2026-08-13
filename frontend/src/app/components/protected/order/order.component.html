@@ -1,1 +1,66 @@
-<p>order works!</p>
+<div class="orders-page">
+  <header class="orders-header">
+    <h1>Your Orders</h1>
+    <p>View your past purchases and order details.</p>
+  </header>
+
+  <div class="orders-loading" *ngIf="loading()">Loading orders...</div>
+  <div class="orders-error" *ngIf="error()">{{ error() }}</div>
+
+  <div
+    class="orders-empty"
+    *ngIf="!loading() && !error() && orders().length === 0"
+  >
+    <p>You have no orders yet.</p>
+  </div>
+
+  <div class="order-list" *ngIf="!loading() && orders().length > 0">
+    <article class="order-card" *ngFor="let order of orders()">
+      <div class="order-card-header" (click)="toggleExpand(order.id)">
+        <div class="order-meta">
+          <span class="order-id">Order #{{ order.id.slice(0, 8) }}</span>
+          <span class="order-date">{{
+            order.orderDate | date: 'medium'
+          }}</span>
+          <span class="order-payment">{{
+            formatPayment(order.paymentMethod)
+          }}</span>
+        </div>
+        <div class="order-summary">
+          <div class="order-total">
+            ${{ order.totalAmount | number: '1.2-2' }}
+          </div>
+          <button
+            class="toggle-btn"
+            type="button"
+            (click)="$event.stopPropagation(); toggleExpand(order.id)"
+          >
+            {{ expandedId() === order.id ? 'Hide items' : 'Show items' }}
+          </button>
+        </div>
+      </div>
+
+      <div class="order-items" *ngIf="expandedId() === order.id">
+        <div class="order-item" *ngFor="let item of order.orders">
+          <img
+            [src]="item.product.imagePath || 'default.jpg'"
+            [alt]="item.product.name || 'Product'"
+          />
+          <div class="order-item-info">
+            <h4>{{ item.product.name || 'Product' }}</h4>
+            <p>
+              Qty {{ item.quantity }} × ${{
+                item.amountAtPurchase | number: '1.2-2'
+              }}
+            </p>
+          </div>
+          <div class="order-item-amount">
+            ${{
+              item.quantity * item.amountAtPurchase | number: '1.2-2'
+            }}
+          </div>
+        </div>
+      </div>
+    </article>
+  </div>
+</div>

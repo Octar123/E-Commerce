@@ -1,7 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { ProductService } from '../../services/ProductService/product.service';
 import { Router } from '@angular/router';
+import { Type } from '../../models/taxonomy.model';
+import { Product } from '../../models/product.model';
 
 @Component({
   selector: 'app-home',
@@ -10,21 +12,37 @@ import { Router } from '@angular/router';
   styleUrl: './home.component.css',
 })
 export class HomeComponent implements OnInit {
-  taxonomy: any = [];
+  readonly taxonomy = signal<Type[]>([]);
+  readonly trendingProducts = signal<Product[]>([]);
 
-  constructor(private productService: ProductService, private router: Router) {}
+  constructor(
+    private productService: ProductService,
+    private router: Router,
+  ) {}
 
   ngOnInit(): void {
-    this.productService.getTaxonomy().subscribe((data) => {
-      this.taxonomy = data.types;
+    this.productService.getTaxonomy().subscribe({
+      next: (data) => this.taxonomy.set(data.types ?? []),
+    });
+
+    this.productService.getProducts({ page: 1 }).subscribe({
+      next: (data) => this.trendingProducts.set((data.data ?? []).slice(0, 4)),
     });
   }
 
-  loadProducts(page: 1) {
-    this.router.navigate(['/products'])
+  loadProducts(): void {
+    this.router.navigate(['/products']);
   }
 
-  loadProductWithType(typeId: number) {
-    this.router.navigate(['/products'], {queryParams: {typeId}});
+  loadProductWithType(typeId: number): void {
+    this.router.navigate(['/products'], { queryParams: { typeId } });
+  }
+
+  getDetails(id: number): void {
+    this.router.navigate(['/details', id]);
+  }
+
+  viewAllProducts(): void {
+    this.router.navigate(['/products']);
   }
 }

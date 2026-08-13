@@ -1,0 +1,62 @@
+<div class="profile-page">
+  <header class="profile-header">
+    <h1>Your Profile</h1>
+    <p>Manage your account details and password.</p>
+  </header>
+
+  <div class="profile-loading" *ngIf="loading()">Loading profile...</div>
+  <div class="profile-error" *ngIf="error()">{{ error() }}</div>
+
+  <div class="profile-grid" *ngIf="!loading() && !error()">
+    <section class="profile-card">
+      <h2>Account</h2>
+      <form (ngSubmit)="updateProfile()">
+        <label>
+          Name
+          <input type="text" name="name" [(ngModel)]="profile.name" required />
+        </label>
+        <label>
+          Email
+          <input
+            type="email"
+            name="email"
+            [(ngModel)]="profile.email"
+            required
+          />
+        </label>
+        <button type="submit" [disabled]="saving()">
+          {{ saving() ? 'Saving...' : 'Save Changes' }}
+        </button>
+      </form>
+    </section>
+
+    <section class="profile-card">
+      <h2>Change Password</h2>
+      <form (ngSubmit)="changePassword()">
+        <label>
+          New Password
+          <input
+            type="password"
+            name="newPassword"
+            [(ngModel)]="newPassword"
+            required
+          />
+        </label>
+        <label>
+          Confirm Password
+          <input
+            type="password"
+            name="confirmPassword"
+            [(ngModel)]="confirmPassword"
+            required
+          />
+        </label>
+        <button type="submit">Update Password</button>
+      </form>
+      <p class="hint">
+        Having trouble signing in?
+        <a routerLink="/forgot-password">Reset via OTP</a>
+      </p>
+    </section>
+  </div>
+</div>

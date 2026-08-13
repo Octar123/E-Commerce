@@ -132,6 +132,43 @@
   transform: translateY(-2px);
 }
 
+.payment-modal-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex; justify-content: center; align-items: center;
+  z-index: 1000;
+}
+
+.payment-modal {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  width: 90%; max-width: 400px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.payment-options {
+  margin: 1.5rem 0;
+  display: flex; flex-direction: column; gap: 10px;
+}
+
+.option {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px; border: 1px solid #eee; border-radius: 4px;
+  cursor: pointer;
+}
+
+.modal-actions {
+  display: flex; justify-content: flex-end; gap: 10px;
+}
+
+.confirm-btn { background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 4px; }
+.cancel-btn { background: #dc3545; color: white; border: none; padding: 10px 20px; border-radius: 4px; }
+.confirm-btn:disabled { background: #ccc; }
+
+
 @media (max-width: 992px) {
   .cart-content { grid-template-columns: 1fr; }
   .cart-item { grid-template-columns: 80px 1fr; }

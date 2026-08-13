@@ -2,45 +2,62 @@
   <section class="hero">
     <div class="hero-content">
       <h1>Upgrade Your Lifestyle.</h1>
-      <p>Discover the latest tech, fashion, and home essentials curated just for you.</p>
+      <p>
+        Discover the latest tech, fashion, and home essentials curated just for
+        you.
+      </p>
       <div class="hero-buttons">
-        <button class="btn-primary" (click)="loadProducts(1)">Shop Now</button>
+        <button class="btn-primary" type="button" (click)="loadProducts()">
+          Shop Now
+        </button>
       </div>
     </div>
   </section>
 
   <section class="section-container">
-  <h2 class="section-title">Shop by Type</h2>
-  <div class="category-grid">
-    <div class="category-card" *ngFor="let type of taxonomy">
-      <div class="category-content">
-        <button class="category-action-btn" (click)="loadProductWithType(type.id)">
-          {{ type.name }}
-        </button>
-      </div>
-    </div>
-  </div>
-</section>
-
-  <!-- <section class="section-container">
-    <div class="section-header">
-      <h2 class="section-title">Trending Now</h2>
-      <a href="#" class="view-all">View All Products →</a>
-    </div>
-    
-    <div class="product-grid">
-      <div class="product-card" *ngFor="let product of trendingProducts">
-        <div class="product-badge">Hot</div>
-        <div class="product-img-placeholder"></div> 
-        <div class="product-info">
-          <h4>{{ product.name }}</h4>
-          <div class="product-meta">
-            <span class="price">${{ product.price }}</span>
-            <span class="rating">★ {{ product.rating }}</span>
-          </div>
-          <button class="add-to-cart">Add to Cart</button>
+    <h2 class="section-title">Shop by Type</h2>
+    <div class="category-grid">
+      <div class="category-card" *ngFor="let type of taxonomy()">
+        <div class="category-content">
+          <button
+            class="category-action-btn"
+            type="button"
+            (click)="loadProductWithType(type.id)"
+          >
+            {{ type.name }}
+          </button>
         </div>
       </div>
     </div>
-  </section> -->
+  </section>
+
+  <section class="section-container" *ngIf="trendingProducts().length > 0">
+    <div class="section-header">
+      <h2 class="section-title">Trending Now</h2>
+      <button class="view-all" type="button" (click)="viewAllProducts()">
+        View All Products →
+      </button>
+    </div>
+
+    <div class="product-grid">
+      <div
+        class="product-card"
+        *ngFor="let product of trendingProducts()"
+        (click)="getDetails(product.id)"
+      >
+        <div class="product-badge">Hot</div>
+        <img
+          class="product-img"
+          [src]="product.imagePath || 'default.jpg'"
+          [alt]="product.name"
+        />
+        <div class="product-info">
+          <h4>{{ product.name }}</h4>
+          <div class="product-meta">
+            <span class="price">${{ product.price | number: '1.2-2' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 </div>

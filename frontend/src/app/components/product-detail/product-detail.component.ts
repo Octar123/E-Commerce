@@ -6,6 +6,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IsLoggedInService } from '../../shared/is-logged-in.service';
 import { CartService } from '../../services/CartService/cart.service';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'app-product-detail',
@@ -31,7 +32,6 @@ export class ProductDetailComponent implements OnInit {
     );
     this.productService.getProductDetail(id).subscribe((data) => {
       this.product = data.product;
-      // console.log(this.product)
     });
   }
 
@@ -47,30 +47,21 @@ export class ProductDetailComponent implements OnInit {
   }
 
   addToCart() {
-    // this.toast.show(`Added ${this.quantity} ${this.product.name} to cart`, 'success');
-    // let isLoggedIn = false;
-    let user = {};
-    this.isLoggedIn.isLoggedIn$.subscribe((data) => {
-      // console.log(data);
+    this.isLoggedIn.isLoggedIn$.pipe(take(1)).subscribe((data) => {
       if (data === null) {
         this.notifyService.show('You have to Login', false);
-        this.router.navigate(['login']);
-      } else {
-        user = data;
-        // this.cartService.addToCart(this.product.id, this.quantity).subscribe();
+        this.router.navigate(['/login']);
+        return;
       }
+      this.cartService.addToCart(this.product.id, this.quantity).subscribe();
     });
-    // console.log(this.quantity);
-    this.cartService.addToCart(this.product.id, this.quantity).subscribe();
-
-    // if(this.isLoggedIn.isLoggedIn$)
   }
 
   async shareProduct() {
     try {
       await navigator.clipboard.writeText(window.location.href);
       this.notifyService.show('URL copied to clipboard!', true);
-    } catch (err) {
+    } catch {
       this.notifyService.show('Failed to copy URL', false);
     }
   }

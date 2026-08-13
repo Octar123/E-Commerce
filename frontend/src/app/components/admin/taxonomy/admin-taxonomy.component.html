@@ -1,0 +1,76 @@
+<div class="admin-page">
+  <header>
+    <h1>Taxonomy</h1>
+    <p>Manage Type → Category → Subcategory hierarchy.</p>
+  </header>
+
+  <div class="taxonomy-grid">
+    <section class="admin-card">
+      <h2>Types</h2>
+      <div class="inline-form">
+        <input [(ngModel)]="newTypeName" placeholder="New type name" />
+        <button type="button" (click)="addType()">Add</button>
+      </div>
+      <ul>
+        <li *ngFor="let type of types()">
+          <button type="button" class="linkish" (click)="selectType(type.id)">
+            {{ type.name }}
+          </button>
+          <button type="button" class="danger" (click)="deleteType(type.id)">
+            Delete
+          </button>
+        </li>
+      </ul>
+    </section>
+
+    <section class="admin-card">
+      <h2>Categories</h2>
+      <div class="inline-form">
+        <input [(ngModel)]="newCategoryName" placeholder="New category" />
+        <button type="button" (click)="addCategory()" [disabled]="!selectedTypeId">
+          Add
+        </button>
+      </div>
+      <ul>
+        <li *ngFor="let cat of categories()">
+          <button
+            type="button"
+            class="linkish"
+            (click)="selectCategory(cat.id)"
+          >
+            {{ cat.name }}
+          </button>
+          <button type="button" class="danger" (click)="deleteCategory(cat.id)">
+            Delete
+          </button>
+        </li>
+      </ul>
+    </section>
+
+    <section class="admin-card">
+      <h2>Subcategories</h2>
+      <div class="inline-form">
+        <input [(ngModel)]="newSubCategoryName" placeholder="New subcategory" />
+        <button
+          type="button"
+          (click)="addSubCategory()"
+          [disabled]="!selectedCategoryId"
+        >
+          Add
+        </button>
+      </div>
+      <ul>
+        <li *ngFor="let sub of subCategories()">
+          <span>{{ sub.name }}</span>
+          <button
+            type="button"
+            class="danger"
+            (click)="deleteSubCategory(sub.id)"
+          >
+            Delete
+          </button>
+        </li>
+      </ul>
+    </section>
+  </div>
+</div>

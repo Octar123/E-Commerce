@@ -1,8 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { ProductService } from '../../services/ProductService/product.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SidebarComponent } from '../sidebar/sidebar.component';
+import {
+  Product,
+  ProductFilters,
+  ProductSearchMetadata,
+} from '../../models/product.model';
 
 @Component({
   selector: 'app-product',
@@ -11,63 +16,74 @@ import { SidebarComponent } from '../sidebar/sidebar.component';
   styleUrl: './product.component.css',
 })
 export class ProductComponent implements OnInit {
-  constructor(private productService: ProductService, private router: Router, private route: ActivatedRoute) {}
+  readonly products = signal<Product[]>([]);
+  readonly metadata = signal<ProductSearchMetadata | null>(null);
+  readonly loading = signal(false);
+  readonly error = signal<string | null>(null);
 
-  metadata: any = {};
-  products: any[] = [];
+  constructor(
+    private productService: ProductService,
+    private router: Router,
+    private route: ActivatedRoute,
+  ) {}
 
   ngOnInit(): void {
-
-    // this.router.navigate([], {
-    //   relativeTo: this.route,
-    //   queryParams: {},
-    //   replaceUrl: true
-    // });
-    
-    this.route.queryParams.subscribe(params => {
+    this.route.queryParams.subscribe((params) => {
       this.fetchData(params);
-    })
+    });
   }
 
-  private fetchData(params: any) {
-    const filters = {
-      page: params['page'] || 1,
+  private fetchData(params: Record<string, string>): void {
+    const filters: ProductFilters = {
+      page: params['page'] ? Number(params['page']) : 1,
       search: params['search'] || '',
-      typeId: params['typeId'] || null,
-      categoryId: params['categoryId'] || null,
-      subCategoryId: params['subCategoryId'] || null,
-      minPrice: params['minPrice'] || null,
-      maxPrice: params['maxPrice'] || null
-    }
+      typeId: params['typeId'] ? Number(params['typeId']) : null,
+      categoryId: params['categoryId'] ? Number(params['categoryId']) : null,
+      subCategoryId: params['subCategoryId']
+        ? Number(params['subCategoryId'])
+        : null,
+      minPrice: params['minPrice'] ? Number(params['minPrice']) : null,
+      maxPrice: params['maxPrice'] ? Number(params['maxPrice']) : null,
+    };
 
     this.fetchProducts(filters);
   }
 
-  fetchProducts(filters: any) {
-    this.productService.getProducts(filters).subscribe(data => {
-      this.products = data.data;
-      this.metadata = data.metadata;
-    })
+  fetchProducts(filters: ProductFilters): void {
+    this.loading.set(true);
+    this.error.set(null);
+    this.productService.getProducts(filters).subscribe({
+      next: (data) => {
+        this.products.set(data.data ?? []);
+        this.metadata.set(data.metadata ?? null);
+        this.loading.set(false);
+      },
+      error: () => {
+        this.error.set('Failed to load products.');
+        this.loading.set(false);
+      },
+    });
   }
 
-  handleFilters(filters: any) {
-    this.router.navigate([], {relativeTo: this.route,queryParams: filters});
+  handleFilters(filters: ProductFilters): void {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: filters,
+    });
   }
 
-  getDetails(id: number){
-    this.router.navigate(['/details', id])
+  getDetails(id: number): void {
+    this.router.navigate(['/details', id]);
   }
 
-
-  onPageChange(page: number) {
-    if (page >= 1 && page <= this.metadata.lastPage) {
+  onPageChange(page: number): void {
+    const meta = this.metadata();
+    if (meta && page >= 1 && page <= meta.lastPage) {
       this.router.navigate([], {
         relativeTo: this.route,
         queryParams: { page },
-        queryParamsHandling: 'merge'
+        queryParamsHandling: 'merge',
       });
     }
   }
-
-
 }

@@ -12,18 +12,11 @@ export const authGuard: CanActivateFn = (route, state) => {
     filter(val => val === true),
     switchMap(() => isLoggedIn.isLoggedIn$),
     take(1),
-    map(user => {
-      if(user === null){
+    map((user) => {
+      if (user === null) {
         return router.createUrlTree(['/login']);
-      }else{
-        return true;
       }
-    })
-  )
-
-  // if(isLoggedIn.isLoggedIn.value === null){
-  //   return router.createUrlTree(['/login']);
-  // }else{
-  //   return true;
-  // }
+      return true;
+    }),
+  );
 };

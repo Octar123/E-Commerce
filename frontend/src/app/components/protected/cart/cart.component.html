@@ -1,61 +1,166 @@
-<div class="cart-container" *ngIf="cartItems">
-  <header class="cart-header">
-    <h1>Shopping Cart</h1>
-    <p>Welcome back, <strong>{{ user.name }}</strong>. You have {{ cartItems.length }} items.</p>
-  </header>
+<div class="cart-container" *ngIf="!loading(); else loadingTpl">
+  <div class="orders-error" *ngIf="error()">{{ error() }}</div>
 
-  <div class="cart-content">
-    <!-- Items List -->
-    <div class="items-section">
-      <div class="cart-item" *ngFor="let item of cartItems; let i = index">
-        <div class="item-img">
-          <img [src]="item.product.imagePath || 'default.jpg'" alt="Product">
-        </div>
-        
-        <div class="item-details">
-          <h3>{{ item.product.name }}</h3>
-          <p class="desc">{{ item.product.description }}</p>
-          <span class="unit-price">${{ item.product.price | number:'1.2-2' }}</span>
-        </div>
+  <ng-container *ngIf="!error()">
+    <header class="cart-header">
+      <h1>Shopping Cart</h1>
+      <p>
+        Welcome back, <strong>{{ user()?.name }}</strong>. You have
+        {{ cartItems().length }} items.
+      </p>
+    </header>
 
-        <div class="item-actions">
-          <div class="qty-control">
-            <button (click)="updateQuantity(item, -1)">-</button>
-            <span>{{ item.quantity }}</span>
-            <button (click)="updateQuantity(item, 1)">+</button>
-          </div>
-          <button class="delete-btn" (click)="removeItem(i, item)" title="Remove Item">
-            🗑️
-          </button>
-        </div>
-
-        <div class="item-total">
-          ${{ (item.product.price * item.quantity) | number:'1.2-2' }}
-        </div>
-      </div>
+    <div class="cart-empty" *ngIf="cartItems().length === 0">
+      <p>Your cart is empty.</p>
     </div>
 
-    <!-- Summary Sidebar -->
-    <aside class="summary-section">
-      <div class="summary-card">
-        <h2>Order Summary</h2>
-        <div class="summary-row">
-          <span>Subtotal</span>
-          <span>${{ totalAmount | number:'1.2-2' }}</span>
+    <div class="cart-content" *ngIf="cartItems().length > 0">
+      <div class="items-section">
+        <div class="cart-item" *ngFor="let item of cartItems()">
+          <div class="item-img">
+            <img
+              [src]="item.product.imagePath || 'default.jpg'"
+              [alt]="item.product.name"
+            />
+          </div>
+
+          <div class="item-details">
+            <h3>{{ item.product.name }}</h3>
+            <p class="desc">{{ item.product.description }}</p>
+            <span class="unit-price"
+              >${{ item.product.price | number: '1.2-2' }}</span
+            >
+          </div>
+
+          <div class="item-actions">
+            <div class="qty-control">
+              <button
+                type="button"
+                (click)="updateQuantity(item, -1)"
+                aria-label="Decrease quantity"
+              >
+                -
+              </button>
+              <span>{{ item.quantity }}</span>
+              <button
+                type="button"
+                (click)="updateQuantity(item, 1)"
+                aria-label="Increase quantity"
+              >
+                +
+              </button>
+            </div>
+            <button
+              class="delete-btn"
+              type="button"
+              (click)="removeItem(item)"
+              aria-label="Remove item"
+              title="Remove Item"
+            >
+              Remove
+            </button>
+          </div>
+
+          <div class="item-total">
+            ${{ item.product.price * item.quantity | number: '1.2-2' }}
+          </div>
         </div>
-        <div class="summary-row">
-          <span>Shipping</span>
-          <span class="free">Free</span>
-        </div>
-        <hr>
-        <div class="summary-row total">
-          <span>Total</span>
-          <span>${{ totalAmount | number:'1.2-2' }}</span>
-        </div>
-        <button class="order-btn" (click)="placeOrder()">
-          Order Now
-        </button>
       </div>
-    </aside>
+
+      <aside class="summary-section">
+        <div class="summary-card">
+          <h2>Order Summary</h2>
+          <div class="summary-row">
+            <span>Subtotal</span>
+            <span>${{ totalAmount() | number: '1.2-2' }}</span>
+          </div>
+          <div class="summary-row">
+            <span>Shipping</span>
+            <span class="free">Free</span>
+          </div>
+          <hr />
+          <div class="summary-row total">
+            <span>Total</span>
+            <span>${{ totalAmount() | number: '1.2-2' }}</span>
+          </div>
+          <button class="order-btn" type="button" (click)="placeOrder()">
+            Order Now
+          </button>
+        </div>
+      </aside>
+    </div>
+  </ng-container>
+</div>
+
+<ng-template #loadingTpl>
+  <div class="cart-container">
+    <p>Loading cart...</p>
+  </div>
+</ng-template>
+
+<div class="payment-modal-overlay" *ngIf="isModalOpen()">
+  <div class="payment-modal" role="dialog" aria-modal="true" aria-labelledby="payment-title">
+    <h2 id="payment-title">Select Payment Method</h2>
+    <p>
+      Total Amount:
+      <strong>${{ totalAmount() | number: '1.2-2' }}</strong>
+    </p>
+
+    <div class="payment-options">
+      <label class="option">
+        <input
+          type="radio"
+          name="payment"
+          [ngModel]="selectedPayment()"
+          (ngModelChange)="selectedPayment.set($event)"
+          value="online"
+        />
+        <span>UPI (GPay, PhonePe)</span>
+      </label>
+      <label class="option">
+        <input
+          type="radio"
+          name="payment"
+          [ngModel]="selectedPayment()"
+          (ngModelChange)="selectedPayment.set($event)"
+          value="credit card"
+        />
+        <span>Credit Card</span>
+      </label>
+      <label class="option">
+        <input
+          type="radio"
+          name="payment"
+          [ngModel]="selectedPayment()"
+          (ngModelChange)="selectedPayment.set($event)"
+          value="debit card"
+        />
+        <span>Debit Card</span>
+      </label>
+      <label class="option">
+        <input
+          type="radio"
+          name="payment"
+          [ngModel]="selectedPayment()"
+          (ngModelChange)="selectedPayment.set($event)"
+          value="cash"
+        />
+        <span>Cash On Delivery</span>
+      </label>
+    </div>
+
+    <div class="modal-actions">
+      <button class="cancel-btn" type="button" (click)="closeModal()">
+        Cancel
+      </button>
+      <button
+        class="confirm-btn"
+        type="button"
+        [disabled]="!selectedPayment() || placingOrder()"
+        (click)="confirmOrder()"
+      >
+        {{ placingOrder() ? 'Placing...' : 'Confirm Order' }}
+      </button>
+    </div>
   </div>
 </div>

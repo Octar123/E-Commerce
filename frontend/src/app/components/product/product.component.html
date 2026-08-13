@@ -3,12 +3,19 @@
     <app-sidebar (filterChanged)="handleFilters($event)"></app-sidebar>
   </aside>
   <main class="product-container">
-    <div class="product-grid">
-      <div (click)="getDetails(product.id)" class="product-card" *ngFor="let product of products">
+    <div class="orders-loading" *ngIf="loading()">Loading products...</div>
+    <div class="orders-error" *ngIf="error()">{{ error() }}</div>
+
+    <div class="product-grid" *ngIf="!loading()">
+      <div
+        (click)="getDetails(product.id)"
+        class="product-card"
+        *ngFor="let product of products()"
+      >
         <div class="image-wrapper">
           <span class="badge" *ngIf="product.isNew">New</span>
           <img
-            [src]="product.image ? product.image : 'default.jpg'"
+            [src]="product.imagePath || 'default.jpg'"
             [alt]="product.name"
           />
         </div>
@@ -17,38 +24,39 @@
           <span class="category">{{ product.category }}</span>
           <h3 class="product-name">{{ product.name }}</h3>
 
-          <div class="rating">
+          <div class="rating" *ngIf="product.rating">
             <span class="stars">★ {{ product.rating }}</span>
-            <span class="reviews">(124)</span>
           </div>
 
           <div class="price-row">
             <span class="current-price"
-              >${{ product.price | number: "1.2-2" }}</span
+              >${{ product.price | number: '1.2-2' }}</span
             >
             <span class="old-price" *ngIf="product.originalPrice">
-              ${{ product.originalPrice | number: "1.2-2" }}
+              ${{ product.originalPrice | number: '1.2-2' }}
             </span>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="pagination-wrapper" *ngIf="metadata">
+    <div class="pagination-wrapper" *ngIf="metadata() as meta">
       <button
-        (click)="onPageChange(metadata.currentPage - 1)"
-        [disabled]="metadata.currentPage === 1"
+        type="button"
+        (click)="onPageChange(meta.currentPage - 1)"
+        [disabled]="meta.currentPage === 1"
       >
         Previous
       </button>
 
       <span class="page-info">
-        Page {{ metadata.currentPage }} of {{ metadata.lastPage }}
+        Page {{ meta.currentPage }} of {{ meta.lastPage }}
       </span>
 
       <button
-        (click)="onPageChange(metadata.currentPage + 1)"
-        [disabled]="metadata.currentPage === metadata.lastPage"
+        type="button"
+        (click)="onPageChange(meta.currentPage + 1)"
+        [disabled]="meta.currentPage === meta.lastPage"
       >
         Next
       </button>

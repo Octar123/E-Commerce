@@ -3,26 +3,33 @@ import { inject } from '@angular/core';
 import { tap } from 'rxjs';
 import { IsLoggedInService } from '../../shared/is-logged-in.service';
 import { Router } from '@angular/router';
+import { UserData } from '../../models/user.model';
 
 export const responseInterceptor: HttpInterceptorFn = (req, next) => {
-
   const isLoggedInService = inject(IsLoggedInService);
   const router = inject(Router);
 
   return next(req).pipe(
-    tap((event:any) => {
-      if(event instanceof HttpResponse) {
-        const user = event.body?.currentUser;
+    tap((event) => {
+      if (event instanceof HttpResponse) {
+        const body = event.body as { currentUser?: UserData | null } | null;
+        if (!body || !('currentUser' in body)) {
+          return;
+        }
 
-        if(user === null && isLoggedInService.isLoggedIn.value !== null) {
-          isLoggedInService.isLoggedIn.next(null);
-          isLoggedInService.isInitialized.next(true);
+        const user = body.currentUser ?? null;
+
+        if (user === null && isLoggedInService.currentUser() !== null) {
+          isLoggedInService.setUser(null);
+          isLoggedInService.setInitialized(true);
           router.navigate(['/']);
-        }else if(user) {
-          isLoggedInService.isLoggedIn.next(user);
-          isLoggedInService.isInitialized.next(true);
+        } else if (user) {
+          isLoggedInService.setUser(user);
+          isLoggedInService.setInitialized(true);
+        } else {
+          isLoggedInService.setInitialized(true);
         }
       }
-    })
+    }),
   );
 };

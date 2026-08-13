@@ -1,0 +1,47 @@
+<div class="admin-page">
+  <header>
+    <h1>Orders</h1>
+    <p>Review all customer orders.</p>
+  </header>
+
+  <section class="admin-card">
+    <p *ngIf="loading()">Loading orders...</p>
+    <table *ngIf="!loading()">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Date</th>
+          <th>Payment</th>
+          <th>Total</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let order of orders()">
+          <td>{{ order.id.slice(0, 8) }}</td>
+          <td>{{ order.orderDate | date: 'medium' }}</td>
+          <td>{{ order.paymentMethod }}</td>
+          <td>${{ order.totalAmount | number: '1.2-2' }}</td>
+          <td>
+            <button type="button" (click)="viewDetail(order.id)">View</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="admin-card" *ngIf="selected() as order">
+    <div class="detail-header">
+      <h2>Order {{ order.id }}</h2>
+      <button type="button" class="secondary" (click)="closeDetail()">
+        Close
+      </button>
+    </div>
+    <ul>
+      <li *ngFor="let item of order.orders">
+        {{ item.product.name || 'Product' }} — qty {{ item.quantity }} —
+        ${{ item.amountAtPurchase | number: '1.2-2' }}
+      </li>
+    </ul>
+  </section>
+</div>
