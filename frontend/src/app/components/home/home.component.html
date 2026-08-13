@@ -1,15 +1,36 @@
 <div class="home-wrapper">
   <section class="hero">
     <div class="hero-content">
-      <h1>Upgrade Your Lifestyle.</h1>
-      <p>
-        Discover the latest tech, fashion, and home essentials curated just for
-        you.
+      <span class="hero-badge">New Season Arrivals</span>
+      <h1 class="hero-title">Upgrade Your <span class="gradient-text">Lifestyle</span>.</h1>
+      <p class="hero-description">
+        Discover the latest tech, fashion, and home essentials curated just for you with premium quality.
       </p>
       <div class="hero-buttons">
         <button class="btn-primary" type="button" (click)="loadProducts()">
-          Shop Now
+          Shop Collection
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="btn-icon"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
         </button>
+        <button class="btn-secondary" type="button" (click)="viewAllProducts()">
+          Browse Categories
+        </button>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <!-- Decorative UI Card for aesthetic complexity -->
+      <div class="hero-card hero-card-1">
+        <div class="card-glow"></div>
+        <span class="card-tag">Hot Deal</span>
+        <h4>Premium Wireless Audio</h4>
+        <p>Active Noise Cancelling</p>
+        <span class="card-price">$299.00</span>
+      </div>
+      <div class="hero-card hero-card-2">
+        <div class="card-glow"></div>
+        <span class="card-tag tag-blue">Exclusive</span>
+        <h4>Smart Chronograph</h4>
+        <p>Titanium Case Edition</p>
+        <span class="card-price">$549.00</span>
       </div>
     </div>
   </section>
@@ -17,15 +38,13 @@
   <section class="section-container">
     <h2 class="section-title">Shop by Type</h2>
     <div class="category-grid">
-      <div class="category-card" *ngFor="let type of taxonomy()">
-        <div class="category-content">
-          <button
-            class="category-action-btn"
-            type="button"
-            (click)="loadProductWithType(type.id)"
-          >
-            {{ type.name }}
-          </button>
+      <div class="category-card" *ngFor="let type of taxonomy()" (click)="loadProductWithType(type.id)">
+        <div class="category-icon-wrapper">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="category-icon"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        </div>
+        <div class="category-info">
+          <h3 class="category-name">{{ type.name }}</h3>
+          <span class="category-link">Explore Collection &rarr;</span>
         </div>
       </div>
     </div>
@@ -35,7 +54,7 @@
     <div class="section-header">
       <h2 class="section-title">Trending Now</h2>
       <button class="view-all" type="button" (click)="viewAllProducts()">
-        View All Products →
+        View All Products &rarr;
       </button>
     </div>
 
@@ -45,16 +64,21 @@
         *ngFor="let product of trendingProducts()"
         (click)="getDetails(product.id)"
       >
-        <div class="product-badge">Hot</div>
-        <img
-          class="product-img"
-          [src]="product.imagePath || 'default.jpg'"
-          [alt]="product.name"
-        />
+        <div class="product-badge">Trending</div>
+        <div class="product-img-container">
+          <img
+            class="product-img"
+            [src]="product.imagePath || 'default.jpg'"
+            [alt]="product.name"
+          />
+        </div>
         <div class="product-info">
-          <h4>{{ product.name }}</h4>
-          <div class="product-meta">
+          <h4 class="product-title">{{ product.name }}</h4>
+          <div class="product-footer">
             <span class="price">${{ product.price | number: '1.2-2' }}</span>
+            <span class="details-action-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="arrow-icon"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </span>
           </div>
         </div>
       </div>
