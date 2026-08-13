@@ -22,11 +22,7 @@ export class NavBarComponent {
   }
 
   toggleLogout(): void {
-    this.authService.logout().subscribe({
-      next: () => {
-        this.authState.setUser(null);
-      },
-    });
+    this.authService.logout().subscribe();
   }
 
   isAuthPage(): boolean {
