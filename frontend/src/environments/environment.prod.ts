@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiBaseUrl: 'http://localhost:3001',
+  apiBaseUrl: 'https://e-commerce-ir0o.onrender.com',
 };
