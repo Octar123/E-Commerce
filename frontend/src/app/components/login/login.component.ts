@@ -3,6 +3,8 @@ import { AuthService } from '../../services/AuthService/auth.service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
+import { IsLoggedInService } from '../../shared/is-logged-in.service';
+import { UserData } from '../../models/user.model';
 
 @Component({
   selector: 'app-login',
@@ -12,7 +14,7 @@ import { Router, RouterLink } from '@angular/router';
 })
 export class LoginComponent {
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router, private isLoggedIn: IsLoggedInService) {}
 
 
 
@@ -24,9 +26,16 @@ export class LoginComponent {
   showPassword = false;
 
   onSubmit() {
-    // Add your authentication logic here
-    this.authService.login(this.loginData).subscribe(data => {
-      this.router.navigate(['']);
+    this.authService.login(this.loginData).subscribe({
+      next: (data) => {
+        const user = (data.currentUser as UserData) || null;
+        this.isLoggedIn.setUser(user);
+        this.isLoggedIn.setInitialized(true);
+        this.router.navigate(['']);
+      },
+      error: () => {
+        // handle login error if needed
+      }
     });
   }
 
