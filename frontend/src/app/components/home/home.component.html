@@ -35,7 +35,51 @@
     </div>
   </section>
 
-  <section class="section-container">
+  <!-- Loading State -->
+  <div class="status-section" *ngIf="isLoading()">
+    <div class="loading-wrapper">
+      <div class="spinner-wrapper">
+        <div class="loader-spinner"></div>
+      </div>
+      <p class="status-title">Connecting to backend services...</p>
+      <p class="status-subtitle">Fetching taxonomy and trending items.</p>
+      
+      <!-- Taking longer warning -->
+      <div class="startup-notice" *ngIf="isTakingLong()">
+        <div class="notice-icon">⏳</div>
+        <div class="notice-content">
+          <h4>Server starting up...</h4>
+          <p>We are using a free-tier hosting instance, which takes <strong>1 to 2 minutes</strong> to spin up from cold sleep. Thanks for your patience!</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error / Offline State -->
+  <div class="status-section" *ngIf="isError()">
+    <div class="error-wrapper">
+      <div class="error-icon-wrapper">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="error-svg"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+      </div>
+      <h3 class="status-title">Unable to Connect</h3>
+      <p class="status-subtitle">The server might be undergoing maintenance or still starting up.</p>
+      
+      <div class="startup-notice offline-notice">
+        <div class="notice-icon">💡</div>
+        <div class="notice-content">
+          <h4>First load in a while?</h4>
+          <p>The backend requires about 1-2 minutes to initialize on first launch. If you just opened the website, wait a moment and try retrying below.</p>
+        </div>
+      </div>
+
+      <button class="btn-primary btn-retry" type="button" (click)="retry()">
+        Retry Connection
+      </button>
+    </div>
+  </div>
+
+  <!-- Shop by Type (only shown when taxonomy exists) -->
+  <section class="section-container" *ngIf="taxonomy().length > 0">
     <h2 class="section-title">Shop by Type</h2>
     <div class="category-grid">
       <div class="category-card" *ngFor="let type of taxonomy()" (click)="loadProductWithType(type.id)">
@@ -50,6 +94,7 @@
     </div>
   </section>
 
+  <!-- Trending Now (only shown when products exist) -->
   <section class="section-container" *ngIf="trendingProducts().length > 0">
     <div class="section-header">
       <h2 class="section-title">Trending Now</h2>

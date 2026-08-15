@@ -14,6 +14,9 @@ import { Product } from '../../models/product.model';
 export class HomeComponent implements OnInit {
   readonly taxonomy = signal<Type[]>([]);
   readonly trendingProducts = signal<Product[]>([]);
+  readonly isLoading = signal<boolean>(true);
+  readonly isError = signal<boolean>(false);
+  readonly isTakingLong = signal<boolean>(false);
 
   constructor(
     private productService: ProductService,
@@ -21,12 +24,31 @@ export class HomeComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    // Show a helpful tip if the backend takes longer than 4 seconds to respond
+    setTimeout(() => {
+      if (this.isLoading()) {
+        this.isTakingLong.set(true);
+      }
+    }, 4000);
+
     this.productService.getTaxonomy().subscribe({
       next: (data) => this.taxonomy.set(data.types ?? []),
+      error: (err) => {
+        console.error('Error loading categories:', err);
+      }
     });
 
     this.productService.getProducts({ page: 1 }).subscribe({
-      next: (data) => this.trendingProducts.set((data.data ?? []).slice(0, 4)),
+      next: (data) => {
+        this.trendingProducts.set((data.data ?? []).slice(0, 4));
+        this.isLoading.set(false);
+        this.isError.set(false);
+      },
+      error: (err) => {
+        console.error('Error loading trending products:', err);
+        this.isLoading.set(false);
+        this.isError.set(true);
+      }
     });
   }
 
@@ -44,5 +66,12 @@ export class HomeComponent implements OnInit {
 
   viewAllProducts(): void {
     this.router.navigate(['/products']);
+  }
+
+  retry(): void {
+    this.isLoading.set(true);
+    this.isError.set(false);
+    this.isTakingLong.set(false);
+    this.ngOnInit();
   }
 }
